@@ -23,14 +23,8 @@
   "options_page": "options.html",
   "permissions": [
     "tabs",
-		"notifications",
-    "http://mail.google.com/*",
-    "https://mail.google.com/*",
-    "http://www.google.com/reader/*",
-    "https://www.google.com/reader/*",
-    "http://www.google.com/voice/*",
-    "https://www.google.com/voice/*",
-    "http://wave.google.com/*",
-    "https://wave.google.com/*"
+	"notifications",
+    "http://*",
+	"https://*"
   ]
 }
