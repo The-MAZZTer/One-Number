@@ -1,0 +1,36 @@
+{
+  "name": "__MSG_name__",
+  "version": "1.5.3.15",
+  "description": "__MSG_description__",
+  "icons": {
+    "16": "images/icon/16.png",
+    "32": "images/icon/32.png",
+    "48": "images/icon/48.png",
+    "64": "images/icon/64.png",
+    "128": "images/icon/128.png",
+    "256": "images/icon/256.png"
+  },
+
+	"default_locale": "en",
+	
+  "browser_action": {
+    "default_title": "__MSG_default_title__",
+    "default_icon": "images/browser_action/logo.png",
+    "default_popup": "popup.html"
+  },
+
+  "background_page": "background.html",
+  "options_page": "options.html",
+  "permissions": [
+    "tabs",
+		"notifications",
+    "http://mail.google.com/*",
+    "https://mail.google.com/*",
+    "http://www.google.com/reader/*",
+    "https://www.google.com/reader/*",
+    "http://www.google.com/voice/*",
+    "https://www.google.com/voice/*",
+    "http://wave.google.com/*",
+    "https://wave.google.com/*"
+  ]
+}

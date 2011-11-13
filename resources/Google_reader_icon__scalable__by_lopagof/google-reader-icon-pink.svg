@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://web.resource.org/cc/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="64px"
+   height="64px"
+   id="svg2232"
+   sodipodi:version="0.32"
+   inkscape:version="0.45.1"
+   sodipodi:docbase="C:\Users\james\Desktop"
+   sodipodi:docname="google-reader-icon-pink.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs2234" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11"
+     inkscape:cx="32"
+     inkscape:cy="31.664684"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="1030"
+     inkscape:window-x="0"
+     inkscape:window-y="0" />
+  <metadata
+     id="metadata2237">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <g
+       id="g2246"
+       transform="translate(2.8610229e-6,0.4545441)">
+      <rect
+         style="fill:#c8292d;fill-opacity:1"
+         id="rect5164"
+         y="3"
+         x="3.4545412"
+         ry="12.265625"
+         rx="12.265625"
+         height="57.090912"
+         width="57.090912" />
+      <rect
+         style="fill:#debbbc;fill-opacity:1"
+         id="rect5166"
+         y="4.1150579"
+         x="4.5695972"
+         ry="11.150569"
+         rx="11.150569"
+         height="54.860798"
+         width="54.860798" />
+      <rect
+         style="fill:#df4c50;fill-opacity:1"
+         id="rect5168"
+         y="5.2301121"
+         x="5.6846552"
+         ry="10.481534"
+         rx="10.481534"
+         height="52.630684"
+         width="52.630684" />
+      <circle
+         style="fill:#ffffff"
+         transform="matrix(0.2230114,0,0,0.2230114,3.4545413,2.9999988)"
+         sodipodi:ry="24"
+         sodipodi:rx="24"
+         sodipodi:cy="189"
+         sodipodi:cx="68"
+         id="circle5170"
+         r="24"
+         cy="189"
+         cx="68" />
+      <path
+         style="fill:#ffffff"
+         id="path5172"
+         d="M 39.136358,50.501419 L 31.553971,50.501419 C 31.553971,40.401825 23.366633,32.214487 13.267039,32.214487 L 13.267039,24.632101 C 27.554269,24.632101 39.136358,36.21419 39.136358,50.501419 z " />
+      <path
+         style="fill:#ffffff"
+         id="path5174"
+         d="M 44.48863,50.501419 C 44.48863,33.258212 30.510249,19.279828 13.267039,19.279828 L 13.267039,11.47443 C 34.82105,11.47443 52.294028,28.947409 52.294028,50.501419 L 44.48863,50.501419 z " />
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html i18n-values="style:textdirection;">
+  <!-- Some HTML/JS source and images borrowed from Chrome for UI consistancy.
+		-->
+  <head>
+    <meta charset="utf-8" /> 
+		<link rel="stylesheet" href="styles/common.css" type="text/css" />
+		<style type="text/css">
+			body {
+				margin: 5px;
+			}
+			#icon {
+				float: left;
+				margin-right: 5px;
+				margin-bottom: 5px;
+			}
+			#time {
+				position: absolute;
+				opacity: 0.5;
+				right: 5px;
+				bottom: 5px;
+			}
+			p {
+				margin: 0px;
+			}
+			#nav_open {
+				display: none;
+				float: right;
+			}
+		</style>
+		<script type="text/javascript" src="scripts/pages.js"></script>
+		<script type="text/javascript" src="scripts/timer.js"></script>
+		<script type="text/javascript">
+			var bp = chrome.extension.getBackgroundPage();
+			var u = bp.updater;
+
+			var timer = new Timer(this, "timerTick", null, 50, true);
+			var timeCanvas;
+			var timeContext;
+			var timeout;
+z		
+			function update() {
+				var services = u.getBadgeServices();
+				for (var i = 0; i < services.length; i++) {
+					if (services[i].getUnreadCount() > 0) {
+						$("nav_open").style.display = "block";
+						break;
+					}
+				}
+				
+				u.buildImage(services, $("icon"));
+				
+				var nodes = u.buildNotification(services, document);
+				$("content").textContent = "";
+				for (var i = 0; i < nodes.length; i++) {
+					$("content").appendChild(nodes[i]);
+				}
+				
+				timeCanvas = $("time");
+				timeContext = timeCanvas.getContext("2d");
+				timeContext.fillStyle = "black";
+				
+				startTimer();
+			}
+			
+			function stopTimer() {
+				timer.stop();
+				
+				timeContext.clearRect(0, 0, timeCanvas.width, timeCanvas.height);
+			}
+			
+			function startTimer() {
+				timeout = bp.settings.get("notifications", "timeout");
+				if (timeout > 0) {
+					timer.start();
+					timerTick();
+				}
+			}
+			
+			function timerTick() {
+				var elapsed = (new Date() - timer.startTime) / 1000;
+				if (elapsed >= timeout) {
+					hide();
+					return;
+				}
+				
+				timeContext.clearRect(0, 0, timeCanvas.width, timeCanvas.height);
+				
+				timeContext.beginPath();
+				timeContext.moveTo(8, 8)
+				timeContext.arc(8, 8, 8, -(Math.PI / 2), -(Math.PI / 2) +
+					(2 * Math.PI * elapsed / timeout), true);
+				timeContext.fill();
+				timeContext.closePath();
+			}
+			
+			function hide() {
+				stopTimer();
+				u.notification = null;
+				this.close();
+			}
+			
+			function onFocus() {
+				window.hasFocus = true;
+				stopTimer();
+			}
+			
+			function onBlur() {
+				window.hasFocus = false;
+				if (!window.mouseOver) {
+					startTimer();
+				}
+			}
+			
+			function onMouseOver() {
+				window.mouseOver = true;
+				stopTimer();
+			}
+			
+			function onMouseOut(e) {
+				if (e.target !== document.documentElement) {
+					return;
+				}
+				
+				window.mouseOver = false;
+				if (!window.hasFocus) {
+					startTimer();
+				}
+			}
+			
+			function onLoad() {
+				i18nTemplate.process(document);
+				update();
+			}
+			
+			window.onmouseover = onMouseOver;
+			window.onmouseout = onMouseOut;
+			window.onfocus = onFocus;
+			window.onblur = onBlur;
+		</script>
+	</head>
+  <body onload="onLoad();">
+		<a href="javascript:;" id="nav_open" onclick="unread(); hide();"
+			i18n-content="nav_open">Open unread</a>
+		<canvas id="icon" width="48" height="48"></canvas>
+		<div id="content"></div>
+		<canvas id="time" width="16" height="16"></canvas>
+	</body>
+</html>

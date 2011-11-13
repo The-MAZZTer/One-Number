@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="scripts/extend.js"></script>
+		<script type="text/javascript" src="scripts/quicksort.js"></script>
+		<script type="text/javascript" src="scripts/timer.js"></script>
+		
+		<script type="text/javascript" src="scripts/settings.js"></script>
+		<script type="text/javascript" src="scripts/updater.js"></script>
+		
+		<script type="text/javascript" src="scripts/services/base.js"></script>
+		<script type="text/javascript" src="scripts/services/gmail.js"></script>
+		<script type="text/javascript" src="scripts/services/googlereader.js">
+		</script>
+		<script type="text/javascript" src="scripts/services/googlevoice.js">
+		</script>
+		<script type="text/javascript" src="scripts/services/googlewave.js">
+		</script>
+		
+		<script type="text/javascript">
+      var debug = false;
+			var manifest = null;
+			
+			function init() {
+				var xhr = new XMLHttpRequest();  
+				xhr.open("GET", "/manifest.json", true);
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState != 4) {
+						return;
+					}
+					if (!xhr.responseText) {
+						debug = true;
+						log("Unable to load manifest.json.");
+						afterManifestLoad();
+						return;
+					}
+					
+					manifest = JSON.parse(xhr.responseText);
+					if (!manifest) {
+						debug = true;
+						log("Unable to parse manifest.json.");
+						afterManifestLoad();
+						return;
+					}
+
+					// If we have an update url we have been installed from the gallery
+					// (or elsewhere).  Don't print debug messages,
+					debug = !manifest.update_url;
+					afterManifestLoad();
+				}
+				xhr.send();
+			}
+			
+			function $(a) {
+				return document.getElementById(a);
+			}
+			
+      function log() {
+        if (debug) {
+          console.log.apply(console, arguments);
+        }
+      }
+			
+			var settings;
+			var updater;
+			function afterManifestLoad() {
+				settings = new Settings();
+				updater = new Updater(afterInit);
+			}
+			
+			function afterInit() {
+				if (chrome.browserAction.onClicked) {
+					chrome.browserAction.onClicked.addListener(function() {
+						if (updater.getOneClickOpenUnread() &&
+							updater.getUnreadServices(false).length > 0) {
+							
+							updater.popupOpenUnread(false);
+							return;
+						}
+					});
+				}
+				applySettings();
+				
+				updater.start();
+			}
+			
+			function applySettings() {
+				updater.fixPopupShown();
+				
+				if (!settings.get("notifications", "desktopnotifications")) {
+					updater.hideNotification();
+				}
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<canvas id="canvas" width="19" height="19"></canvas>
+		<audio id="notificationsound" preload="auto"></audio>
+		<img src="images/browser_action/logo.png" id="logo" />
+	</body>
+</html>

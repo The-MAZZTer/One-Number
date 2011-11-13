@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html i18n-values="style:textdirection;">
+  <!-- Some HTML/JS source and images borrowed from Chrome for UI consistancy.
+		-->
+  <head>
+    <title id="title" i18n-content="legal_title">One Number - Legal Info</title>
+    <meta charset="utf-8" /> 
+    <link rel="icon" type="image/png" href="images/pages/favicon.png" />
+		<link rel="stylesheet" href="styles/common.css" type="text/css" />
+		<style type="text/css">
+			body {
+			  margin: 10px;
+			}
+		</style>
+		<script type="text/javascript" src="scripts/pages.js"></script>
+	</head>
+  <body onload="i18nTemplate.process(document); updateNav();">
+		<div id="nav">
+			<div id="nav_fade"></div>
+			<span id="nav_noopen" i18n-content="nav_noopen">No unread</span>
+			<a href="javascript:;" id="nav_open" onclick="return unread();"
+				i18n-content="nav_open">Open unread</a>
+			|
+			<a href="options.html" i18n-content="nav_options">Options</a>
+			|
+			<a href="changelog.html" i18n-content="nav_changelog">Changelog</a>
+			|
+			<span id="nav_selected" i18n-content="nav_legalinfo">Legal info</span>
+		</div>
+    <div id="header">
+      <h1 i18n-content="legal_title">One Number - Legal Info</h1>
+    </div>
+		<a class="section-header" href="javascript:;"
+      onclick="expandCollapse('disclaimer');">
+      <img src="images/pages/collapse.png" id="disclaimerbutton" alt="Collapse"
+        title="Collapse" i18n-values="alt:collapse; title:collapse;" />
+      <span i18n-content="disclaimer">Disclaimer</span>
+    </a>
+		<div class="section" id="disclaimer">
+			<p i18n-content="disclaimer1"></p>
+			<p i18n-content="disclaimer2"></p>
+			<p i18n-content="disclaimer3"></p>
+			<p i18n-content="disclaimer4"></p>
+		</div>
+		<a class="section-header" href="javascript:;"
+      onclick="expandCollapse('apologies');">
+      <img src="images/pages/collapse.png" id="apologiesbutton" alt="Collapse"
+        title="Collapse" i18n-values="alt:collapse; title:collapse;" />
+      <span i18n-content="apologies">Apologies</span>
+    </a>
+		<div class="section" id="apologies">
+			<p i18n-content="apologies1"></p>
+			<p i18n-content="apologies2"></p>
+			<p i18n-content="apologies3"></p>
+			<p i18n-content="apologies4"></p>
+		</div>
+		<a class="section-header" href="javascript:;"
+      onclick="expandCollapse('resources');">
+      <img src="images/pages/collapse.png" id="resourcesbutton" alt="Collapse"
+        title="Collapse" i18n-values="alt:collapse; title:collapse;" />
+      <span i18n-content="resources">Resource Attribution</span>
+    </a>
+		<div class="section" id="resources">
+			<p i18n-content="resourcesdesc"></p>
+			<p>
+				<a href="http://iconexpo.com/2008/12/free-gmail-icons/"
+					i18n-content="resource1url"></a>
+				<span i18n-content="resource1after"></span>
+			</p>
+			<p>
+				<a href="http://lopagof.deviantart.com/art/Google-reader-icon-scalable-85016383"
+					i18n-content="resource2url"></a>
+				<span i18n-content="resource2after"></span>
+			</p>
+			<p>
+				<a href="http://www.daveamenta.com/2009-10/google-voice-support-comes-to-digsby-digsbygv/"
+					i18n-content="resource3url"></a>
+				<span i18n-content="resource3after"></span>
+			</p>
+			<p>
+				<a href="http://www.flickr.com/photos/66568868@N00/4005351165/sizes/o/"
+					i18n-content="resource4url"></a>
+				<span i18n-content="resource4after"></span>
+			</p>
+		</div>
+	</body>
+</html>
