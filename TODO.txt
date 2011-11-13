@@ -1,0 +1,50 @@
+This is my own personal "todo" list for One Number.
+
+Known Bugs:
+- If services update their status while a notification is open, the notification retains the old status until it closes.
+- Gmail preview is using innerHTML, so any HTML in the preview mangles the popup.
+- With no windows open, Open unread in notification does not work.
+- Google Wave checker is hackish, loads the main Google Wave HTML page and parses out stuff from the loaded scripts.  There is an official extension, figure out what APIs they use and replicate that behavior.
+
+Stuff To Add:
+- Console logging turns off if the extension is installed from the Chrome Web Store.  There's no need for this and keeping it on all the time could give users something to attach to bug reports that might be helpful.
+- "Open all services" link in popup that ignores unread messages state.
+- Re-add old icon for people who want it back.  Add selection option in Options.  Allow user to pick any image file, maybe?
+- Add option to revert Google Reader page to default, instead of forcing All Items view.
+	- Also option to only open a single label/feed if only one is selected.
+- Replace service icons with these for a more unified look... after asking for permission of course. :)
+	http://carlosjj.deviantart.com/art/New-Google-Product-Icons-175617374?
+- Add reset button in options for default settings.
+- Make changelog a JSON resource instead of hardcoding it and expand/contract buttons in HTML.
+- Add option to Gmail to open the tablet/"offline" app instead of the normal app.
+- Support for extension setting sync API.  Option to toggle on/off (I personally don't check gmail/gwave at work since they are blocked there).
+- Per-service notification setting overrides.
+	- Perhaps more per-service overrides, and a slightly nicer UI for displaying global settings like that (maybe make global settings an entry in the enabled services list).
+
+Stuff to consider:
+- Do we need content_security_policy manifest field?
+- "Borrow" new Google nav bar for options/etc pages.
+- Allow service classes to refresh their own pages via stuff like spoofed mouse clicks (Gmail/Google Reader have refresh buttons in their own UI).
+	- Someone gave me this bit of code for Gmail (put here for future reference): var clickevent=document.createEvent("MouseEvents"); clickevent.initEvent("click", true, true); var frame = top.document.getElementById('canvas_frame'); var inbox = frame.contentWindow.document.getElementsByClassName("n0")[0]; inbox.dispatchEvent(clickevent)
+
+Services to add (or consider adding):
+- Bookmark service that just provides a static, user-configurable bookmark in the popup.  Have presets for common services.
+- Page watcher that will watch urls of pages for changes.
+	- It will grab an initial snapshot of the page url and store a hash, so we can handle any file type.  Then subsequent checks compare the hash.
+	- Perhaps have an option to only do an HTTP HEAD request and look for header changes such as file size or last modified date.  Won't work on all servers though (some won't provide size/date or always claim the file was just modified in order to skip the browser cache).
+	- Possibly check the header first for file size, if we can't find it then check based on file content.
+- RSS/Atom feed watcher, maybe.  Page watcher would cover this but wouldn't be able to show a preview.
+- Consider Google+.
+- Google Calendar support (alerts about events).
+	- Look into how to differentiate between read/unread.  Does GCal care?  If not, we need to keep track locally.
+	- Google Apps support.
+- Google Docs (track updates to shared docs).
+- Twitter (I'd use it).
+- Picasa?
+- Facebook?
+- Google Tasks?
+- Todo.ly? (only because I use todo.ly :)
+- Google Groups? (updates to subscribed groups?)
+
+Major idea to consider for the future:
+- Rebuild everything to focus on unread messages rather than the services themselves.  Right now we show services and unread counts with only a short preview (which in Google Reader's case isn't even a preview).  Instead we wouldn't care about unread counts anymore, we would just show the messages and the user could consume them, mark them as read, and do service-specific actions on them (such as reply or full view for an e-mail).
