@@ -40,7 +40,7 @@ Facebook.prototype.parseXHR = function() {
 	if(data.inbox.unread > 0) this.preview += "<strong>Mail</strong> - " + data.inbox.unread;
 	if(data.notifications.num_unread > 0)
 	{
-		if (this.mail > 0) this.preview += ", ";
+		if (data.inbox.unread > 0) this.preview += ", ";
 		this.preview += "<strong>Notifications</strong> - " + data.notifications.num_unread;
 	}
 	this.log("logged in : " + settings.get(this.uid, "unread") + " unread.");
