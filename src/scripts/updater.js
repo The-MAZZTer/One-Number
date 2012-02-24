@@ -3,7 +3,7 @@ window.PERMISSION_NOT_ALLOWED = 1;
 window.PERMISSION_DENIED = 2;
 
 function Updater(initHandler) {
-  this.popup = null;
+	this.popup = null;
 	this.notification = null;
 	this.notificationTimer = new Timer(this, "showNotification", [true], 1000);
 	this.initHandler = initHandler;
@@ -15,31 +15,31 @@ function Updater(initHandler) {
 }
 
 Updater.prototype.getBadgeServices = function() {
-  var services = [];
-  for (var i in this.services) {
-    if (this.services[i].getShowOnBadge()) {
-      services.push(this.services[i]);
-    }
-  }
-  return services;
+	var services = [];
+	for (var i in this.services) {
+		if (this.services[i].getShowOnBadge()) {
+			services.push(this.services[i]);
+		}
+	}
+	return services;
 }
-  
+	
 Updater.prototype.start = function() {
-  log("Updater: Starting update.");
-    
-  for (var i in this.services) {
-    this.services[i].update();
-  }
+	log("Updater: Starting update.");
+		
+	for (var i in this.services) {
+		this.services[i].update();
+	}
 	this.update();
 }
 
 Updater.prototype.refresh = function() {
-  log("Updater: Starting update.");
-    
-  for (var i in this.services) {
+	log("Updater: Starting update.");
+		
+	for (var i in this.services) {
 		this.services[i].resetCheckTime();
-    this.services[i].update();
-  }
+		this.services[i].update();
+	}
 }
 
 Updater.prototype.isSomeError = function(services) {
@@ -56,7 +56,7 @@ Updater.prototype.isSomeError = function(services) {
 			}
 		}
 	}
-  return false;
+	return false;
 }
 
 Updater.prototype.isSomeLoggedIn = function(services) {
@@ -73,9 +73,9 @@ Updater.prototype.isSomeLoggedIn = function(services) {
 			}
 		}
 	}
-  return false;
+	return false;
 }
-  
+	
 Updater.prototype.isSomeLoggedOut = function(services) {
 	if (services instanceof Array) {
 		for (var i = 0; i < services.length; i++) {
@@ -90,135 +90,135 @@ Updater.prototype.isSomeLoggedOut = function(services) {
 			}
 		}
 	}
-  return false;
+	return false;
 }
-  
+	
 Updater.prototype.buildTooltip = function(services) {
-  var tooltip = "";
-  for (var i = 0; i < services.length; i++) {
-    if (tooltip != "") {
-      tooltip += chrome.i18n.getMessage("tooltip_service_separator");
-    }
-    
-    if (services[i].getError() != Service.ErrorTypes.ok) {
-      tooltip += chrome.i18n.getMessage("tooltip_service_error",
+	var tooltip = "";
+	for (var i = 0; i < services.length; i++) {
+		if (tooltip != "") {
+			tooltip += chrome.i18n.getMessage("tooltip_service_separator");
+		}
+		
+		if (services[i].getError() != Service.ErrorTypes.ok) {
+			tooltip += chrome.i18n.getMessage("tooltip_service_error",
 				services[i].getDisplayName());
-    } else if (!(services[i].getLoggedIn())) {
-      tooltip += chrome.i18n.getMessage("tooltip_service_login",
+		} else if (!(services[i].getLoggedIn())) {
+			tooltip += chrome.i18n.getMessage("tooltip_service_login",
 				services[i].getDisplayName());
-    } else {
-      tooltip += chrome.i18n.getMessage("tooltip_service", [
-				services[i].getDisplayName(), services[i].getUnreadCount()
+		} else {
+			tooltip += chrome.i18n.getMessage("tooltip_service", [
+				services[i].getDisplayName(), services[i].getUnreadCount().toString()
 			]);
-    }
-  }
-  return tooltip;
+		}
+	}
+	return tooltip;
 }
 
 Updater.prototype.buildNotification = function(services, doc) {
 	var nodes = [];
 	var p;
-  for (var i = 0; i < services.length; i++) {
+	for (var i = 0; i < services.length; i++) {
 		p = doc.createElement("p");
 		
-    if (services[i].getError() != Service.ErrorTypes.ok) {
-      p.textContent = chrome.i18n.getMessage("tooltip_service_error",
+		if (services[i].getError() != Service.ErrorTypes.ok) {
+			p.textContent = chrome.i18n.getMessage("tooltip_service_error",
 				services[i].getDisplayName());
-    } else if (!(services[i].getLoggedIn())) {
-      p.textContent = chrome.i18n.getMessage("tooltip_service_login",
+		} else if (!(services[i].getLoggedIn())) {
+			p.textContent = chrome.i18n.getMessage("tooltip_service_login",
 				services[i].getDisplayName());
-    } else {
-      p.textContent = chrome.i18n.getMessage("tooltip_service", [
-				services[i].getDisplayName(), services[i].getUnreadCount()
+		} else {
+			p.textContent = chrome.i18n.getMessage("tooltip_service", [
+				services[i].getDisplayName(), services[i].getUnreadCount().toString()
 			]);
-    }
+		}
 		
 		nodes.push(p);
-  }
+	}
 	return nodes;
 }
 
 Updater.prototype.update = function() {
-  log("Updater: Updating UI.");
+	log("Updater: Updating UI.");
 
-  var services = this.getBadgeServices();
-    
-  var color = null;
-  if (this.getShowLoggedOut() && this.isSomeLoggedOut(services)) {
-    color = this.getLoggedOutColor();
-  } else if (this.getShowError() && this.isSomeError(services)) {
-    color = this.getErrorColor();
-  } else {
+	var services = this.getBadgeServices();
+		
+	var color = null;
+	if (this.getShowLoggedOut() && this.isSomeLoggedOut(services)) {
+		color = this.getLoggedOutColor();
+	} else if (this.getShowError() && this.isSomeError(services)) {
+		color = this.getErrorColor();
+	} else {
 		var count = 0;
 		for (var i = 0; i < services.length; i++) {
 			var c = services[i].getUnreadCount();
-      if (c > 0) {
-        if (color == null) {
+			if (c > 0) {
+				if (color == null) {
 					count = c;
-          color = services[i].getColor();
-        } else if (settings.get("toolbar_buttons", "showmulti")) {
-          color = this.getMultiColor();
-          break;
-        } else if (c > count) {
+					color = services[i].getColor();
+				} else if (settings.get("toolbar_buttons", "showmulti")) {
+					color = this.getMultiColor();
+					break;
+				} else if (c > count) {
 					count = c;
-          color = services[i].getColor();
+					color = services[i].getColor();
 				}
-      }
-    }
-  }
-  
-  if (color != null) {
-    chrome.browserAction.setBadgeBackgroundColor({color: [color.r, color.g,
+			}
+		}
+	}
+	
+	if (color != null) {
+		chrome.browserAction.setBadgeBackgroundColor({color: [color.r, color.g,
 			color.b, color.a]});
-  }
-  
-  var total = 0;
-  for (var i = 0; i < services.length; i++) {
-    total += services[i].getUnreadCount();
-  }
-  if (total <= 0) {
-    if (this.getShowLoggedOut() && this.isSomeLoggedOut(services)) {
-      chrome.browserAction.setBadgeText({
+	}
+	
+	var total = 0;
+	for (var i = 0; i < services.length; i++) {
+		total += services[i].getUnreadCount();
+	}
+	if (total <= 0) {
+		if (this.getShowLoggedOut() && this.isSomeLoggedOut(services)) {
+			chrome.browserAction.setBadgeText({
 				text: chrome.i18n.getMessage("badge_login")
 			});
 			chrome.browserAction.setIcon({
 				path: "images/browser_action/logo-err.png"
 			});
 		} else if (this.getShowError() && this.isSomeError(services)) {
-      chrome.browserAction.setBadgeText({
+			chrome.browserAction.setBadgeText({
 				text: chrome.i18n.getMessage("badge_error")
 			});
 			chrome.browserAction.setIcon({
 				path: "images/browser_action/logo-err.png"
 			});
-    } else {
-      chrome.browserAction.setBadgeText({
+		} else {
+			chrome.browserAction.setBadgeText({
 				text: chrome.i18n.getMessage("badge_no_unread")
 			});
 			chrome.browserAction.setIcon({
 				path: "images/browser_action/logo.png"
 			});
-    }
-  } else {
+		}
+	} else {
 		total = Math.min(total, 9999);
-    chrome.browserAction.setBadgeText({text: total.toString()});
+		chrome.browserAction.setBadgeText({text: total.toString()});
 		
-    /* var path = "";
-    for (var i = 0; i < services.length; i++) {
-      if (services[i].getUnreadCount() > 0) {
-        if (path != "") {
-          path += "-";
-        }
-        path += services[i].__proto__.constructor.name.toLowerCase();
-      }
-    }
-    chrome.browserAction.setIcon({path: "images/browser_action/" + path +
-      ".png"}); */
+		/* var path = "";
+		for (var i = 0; i < services.length; i++) {
+			if (services[i].getUnreadCount() > 0) {
+				if (path != "") {
+					path += "-";
+				}
+				path += services[i].__proto__.constructor.name.toLowerCase();
+			}
+		}
+		chrome.browserAction.setIcon({path: "images/browser_action/" + path +
+			".png"}); */
 		chrome.browserAction.setIcon({imageData: this.buildImage(services,
 			$("canvas"))});
 	}
 	chrome.browserAction.setTitle({title: this.buildTooltip(services)});
-  
+	
 	var views = chrome.extension.getViews();
 	for (var i = 0; i < views.length; i++) {
 		if (views[i].onupdate) {
@@ -231,7 +231,7 @@ Updater.prototype.update = function() {
 	var showNotification = false;
 	var isFirstNotification = true;
 	for (var i = 0; i < services.length; i++) {
-    showNotification = showNotification || services[i].hasNewMessages();
+		showNotification = showNotification || services[i].hasNewMessages();
 		
 		if (services[i].timesUpdated >= 2) {
 			isFirstNotification = false;
@@ -296,7 +296,7 @@ Updater.prototype.showNotification = function(timerFired) {
 	
 	this.notification.show();
 }
-  
+	
 Updater.prototype.hideNotification = function() {
 	if (this.notification) {
 		log("Updater: Hiding notification.");
@@ -305,70 +305,70 @@ Updater.prototype.hideNotification = function() {
 		this.notification = null;
 	}
 }
-  
+	
 Updater.prototype.popupOpened = function(p) {
-  log("Updater: Popup opened.");
-  
-  this.popup = p;
-  
-  if (this.getOneClickOpenUnread() && this.getUnreadServices(false).length >
-    0) {
-    
-    this.popup.window.close();
-    this.popupOpenUnread(false);
-    return;
-  }
-    
-  this.updatePopup();
+	log("Updater: Popup opened.");
+	
+	this.popup = p;
+	
+	if (this.getOneClickOpenUnread() && this.getUnreadServices(false).length >
+		0) {
+		
+		this.popup.window.close();
+		this.popupOpenUnread(false);
+		return;
+	}
+		
+	this.updatePopup();
 	
 	if (settings.get("hidden", "showPopupHint")) {
 		p.document.getElementById("popupHint").style.display = "block";
 	}
 }
-  
+	
 Updater.prototype.popupClosed = function() {
-  log("Updater: Popup closed.");
-    
-  this.popup = null;
+	log("Updater: Popup closed.");
+		
+	this.popup = null;
 }
-  
+	
 Updater.prototype.updatePopup = function() {
-  log("Updater: Updating popup.");
-  
-  if (this.popup == null) {
-    return;
-  }
-  
-  var doc = this.popup.document;
-  
+	log("Updater: Updating popup.");
+	
+	if (this.popup == null) {
+		return;
+	}
+	
+	var doc = this.popup.document;
+	
 	var any = false;
-  var anyunread = false;
-  for (var i in this.services) {
+	var anyunread = false;
+	for (var i in this.services) {
 		any = true;
-    if (this.services[i].getUnreadCount() > 0) {
-      anyunread = true;
-      break;
-    }
-  }
+		if (this.services[i].getUnreadCount() > 0) {
+			anyunread = true;
+			break;
+		}
+	}
 
-  var noopen = doc.getElementById("noopen");
-  var open = doc.getElementById("open");
-  if (anyunread) {
-    open.style.display = "inline";
-    noopen.style.display = "none";
-  } else {
-    open.style.display = "none";
-    noopen.style.display = "inline";
-  }
-  
-  var content = doc.getElementById("dynamiccontent");
-  while (content.firstChild != null) {
-    content.removeChild(content.firstChild);
-  }
-  
+	var noopen = doc.getElementById("noopen");
+	var open = doc.getElementById("open");
+	if (anyunread) {
+		open.style.display = "inline";
+		noopen.style.display = "none";
+	} else {
+		open.style.display = "none";
+		noopen.style.display = "inline";
+	}
+	
+	var content = doc.getElementById("dynamiccontent");
+	while (content.firstChild != null) {
+		content.removeChild(content.firstChild);
+	}
+	
 	var first = true;
 	
-  for (var i in this.services) {
+	for (var i in this.services) {
 		var div;
 		if (settings.get("popup", "showiconstext") == "icons" &&
 			!settings.get("popup", "showseparators")) {
@@ -377,7 +377,7 @@ Updater.prototype.updatePopup = function() {
 		} else {
 			div = doc.createElement("div");
 		}
-    
+		
 		if (first || settings.get("popup", "showseparators")) {
 			var hr = doc.createElement("hr");
 			if (first) {
@@ -386,23 +386,23 @@ Updater.prototype.updatePopup = function() {
 				div.appendChild(hr);
 			}
 		}
-    
-    var extra = this.services[i].getExtraUrl();
-    if (div.nodeName != "SPAN" && extra && settings.get(i, "showextra")) {
-      var compose = doc.createElement("a");
-      compose.href = "javascript:;";
-      compose.setAttribute("onclick", "openExtra('" + this.services[i].uid +
+		
+		var extra = this.services[i].getExtraUrl();
+		if (div.nodeName != "SPAN" && extra && settings.get(i, "showextra")) {
+			var compose = doc.createElement("a");
+			compose.href = "javascript:;";
+			compose.setAttribute("onclick", "openExtra('" + this.services[i].uid +
 				"');");
-      compose.className = "compose";
+			compose.className = "compose";
 			compose.textContent = chrome.i18n.getMessage("gmail_compose");
-      div.appendChild(compose);
-    }
-    
-    var a = doc.createElement("a");
-    a.href = "javascript:;";
-    a.className = "name";
-    a.setAttribute("onclick", "tabopen('" + this.services[i].uid + "');");
-    
+			div.appendChild(compose);
+		}
+		
+		var a = doc.createElement("a");
+		a.href = "javascript:;";
+		a.className = "name";
+		a.setAttribute("onclick", "tabopen('" + this.services[i].uid + "');");
+		
 		var unread = this.services[i].getUnreadCount();
 		var preview = this.services[i].getPreview();
 		
@@ -416,7 +416,7 @@ Updater.prototype.updatePopup = function() {
 			var size = settings.get("popup", "bigicons") ? 32 : 16;
 			img.style.width = size + "px";
 			img.style.height = size + "px";
-      
+			
 			a.appendChild(img);
 			if (settings.get("popup", "showiconstext") == "iconstext") {
 				a.appendChild(doc.createTextNode(" "));
@@ -426,10 +426,10 @@ Updater.prototype.updatePopup = function() {
 		if (settings.get("popup", "showiconstext") != "icons") {
 			a.appendChild(doc.createTextNode(this.services[i].getDisplayName()));
 		}
-    
-    div.appendChild(a);
-    //div.appendChild(doc.createTextNode(" - "));
-     
+		
+		div.appendChild(a);
+		//div.appendChild(doc.createTextNode(" - "));
+		 
 		if (settings.get("popup", "showiconstext") != "icons") {
 			if ((this.services[i].getLoggedIn() && this.services[i].getError() ==
 				Service.ErrorTypes.ok && !this.services[i].refreshing) || unread > 0) {
@@ -454,7 +454,7 @@ Updater.prototype.updatePopup = function() {
 				div.appendChild(doc.createTextNode(chrome.i18n.
 					getMessage("popup_need_login")));
 			}
-    
+		
 			var previewtag;
 			if (settings.get("popup", "showpreviews") && preview && preview.length) {
 				if (settings.get("popup", "showiconstext") == "text" ||
@@ -469,46 +469,46 @@ Updater.prototype.updatePopup = function() {
 				previewtag.innerHTML = preview;
 				div.appendChild(previewtag);
 			}
-      
+			
 			var clear = doc.createElement("div");
 			clear.className = "clear";
 			div.appendChild(clear);
 		}
 
-    content.appendChild(div);
+		content.appendChild(div);
 		
 		first = false;
-  }
+	}
 }
 
 // openedFromPopup is false when opened straight from the badge
 Updater.prototype.getUnreadServices = function(openedFromPopup) {
-  var ret = [];
-  
-  for (var i in this.services) {
-    if (this.services[i].getUnreadCount() <= 0) {
-      continue;
-    }
-    
-    if (!this.services[i].getShowOnBadge() && !openedFromPopup && !this.
-      getOpenHiddenUnread()) {
-      
-      continue;
-    }
-    
-    ret.push(this.services[i]);
-  }
-  
-  return ret;
+	var ret = [];
+	
+	for (var i in this.services) {
+		if (this.services[i].getUnreadCount() <= 0) {
+			continue;
+		}
+		
+		if (!this.services[i].getShowOnBadge() && !openedFromPopup && !this.
+			getOpenHiddenUnread()) {
+			
+			continue;
+		}
+		
+		ret.push(this.services[i]);
+	}
+	
+	return ret;
 }
 
 Updater.prototype.popupOpenUnread = function(openedFromPopup) {
-  log("Updater: Open Unread clicked in popup.");
-  
-  var services = this.getUnreadServices(openedFromPopup);
-  for (var i = 0; i < services.length; i++) {
-    this.openPage(services[i].getUrl(), services[i], i == 0);
-  }
+	log("Updater: Open Unread clicked in popup.");
+	
+	var services = this.getUnreadServices(openedFromPopup);
+	for (var i = 0; i < services.length; i++) {
+		this.openPage(services[i].getUrl(), services[i], i == 0);
+	}
 }
 
 Updater.prototype.getUpdateInterval = function() {
@@ -518,7 +518,7 @@ Updater.prototype.getUpdateInterval = function() {
 Updater.prototype.getTimeout = function() {
 	return settings.get("server_queries", "timeout");
 }
-  
+	
 Updater.prototype.getErrorColor = function() {
 	return settings.get("toolbar_buttons", "errorcolor");
 }
@@ -530,7 +530,7 @@ Updater.prototype.getLoggedOutColor = function() {
 Updater.prototype.getMultiColor = function() {
 	return settings.get("toolbar_buttons", "multicolor");
 }
-  
+	
 Updater.prototype.getProtocol = function() {
 	return settings.get("basic_options", "protocol") ? "https" : "http";
 }
@@ -540,18 +540,18 @@ Updater.prototype.getAlwaysRefresh = function() {
 }
 
 Updater.prototype.openPage = function(url, service, createWindow) {
-  log("Updater: Opening " + url);
+	log("Updater: Opening " + url);
 
-  var compareurl = url.toLowerCase();
-  var index = url.indexOf("://");
-  if (index > -1) {
-    compareurl = url.substr(index + 3);
-  }
-  
-  if (this.getReuseTabs()) {
-    var me = this;
+	var compareurl = url.toLowerCase();
+	var index = url.indexOf("://");
+	if (index > -1) {
+		compareurl = url.substr(index + 3);
+	}
+	
+	if (this.getReuseTabs()) {
+		var me = this;
 				
-    chrome.windows.getAll({ populate: true }, function(windows) {
+		chrome.windows.getAll({ populate: true }, function(windows) {
 			//chrome.tabs.getAllInWindow(null, function(tabs) {
 			for (var i = 0; i < windows.length; i++) {
 				var tabs = windows[i].tabs;
@@ -588,13 +588,13 @@ Updater.prototype.openPage = function(url, service, createWindow) {
 			}
 			//}	
 				
-      if (createWindow && me.getOpenInNewWindow()) {
-        chrome.windows.create({ url: url });
-        return;
-      }
-      chrome.tabs.create({ url: url });
-    });
-  }
+			if (createWindow && me.getOpenInNewWindow()) {
+				chrome.windows.create({ url: url });
+				return;
+			}
+			chrome.tabs.create({ url: url });
+		});
+	}
 }
 
 Updater.prototype.openByUID = function(index) {
@@ -603,15 +603,15 @@ Updater.prototype.openByUID = function(index) {
 }
 
 Updater.prototype.getReuseTabs = function() {
-  return settings.get("basic_options", "reusetabs");
+	return settings.get("basic_options", "reusetabs");
 }
 
 Updater.prototype.getBePickyAboutReuse = function() {
-  return settings.get("basic_options", "bepickyaboutreuse");
+	return settings.get("basic_options", "bepickyaboutreuse");
 }
 
 Updater.prototype.getOpenInNewWindow = function() {
-  return settings.get("basic_options", "openinnewwindow");
+	return settings.get("basic_options", "openinnewwindow");
 }
 
 Updater.prototype.openExtra = function(index) {
@@ -623,19 +623,19 @@ Updater.prototype.openExtra = function(index) {
 }
 
 Updater.prototype.getOneClickOpenUnread = function() {
-  return settings.get("basic_options", "oneclickopenunread");
+	return settings.get("basic_options", "oneclickopenunread");
 }
 
 Updater.prototype.getOpenHiddenUnread = function() {
-  return settings.get("basic_options", "openhiddenunread");
+	return settings.get("basic_options", "openhiddenunread");
 }
-  
+	
 Updater.prototype.getShowError = function() {
-  return settings.get("toolbar_buttons", "showerror");
+	return settings.get("toolbar_buttons", "showerror");
 }
 
 Updater.prototype.getShowLoggedOut = function() {
-  return settings.get("toolbar_buttons", "showloggedout");
+	return settings.get("toolbar_buttons", "showloggedout");
 }
 
 Updater.prototype.buildImage = function(services, canvas) {
@@ -684,7 +684,7 @@ Updater.prototype.buildImage = function(services, canvas) {
 }
 
 Updater.prototype.getMaxActionIcons = function() {
-  return settings.get("toolbar_buttons", "maxactionicons");
+	return settings.get("toolbar_buttons", "maxactionicons");
 }
 
 Updater.prototype.initSettings = function() {
@@ -697,7 +697,7 @@ Updater.prototype.initSettings = function() {
 		type: Settings.SettingTypes.Boolean,
 		defaultValue: false
 	});
-  settings.addSetting("basic_options", "openhiddenunread", {
+	settings.addSetting("basic_options", "openhiddenunread", {
 		type: Settings.SettingTypes.Boolean,
 		defaultValue: false,
 		classes: "indent"
@@ -881,12 +881,12 @@ Updater.prototype.loadServices = function() {
 	var allservices = this.getAvailableServices();
 	
 	this.imgLoading = 0;
-  for (var i = 0; i < allservices.length; i++) {
+	for (var i = 0; i < allservices.length; i++) {
 		for (var j in allservices[i].imagelist) {
 			this.imgLoading++;
 		}
 	}
-  for (var i = 0; i < allservices.length; i++) {
+	for (var i = 0; i < allservices.length; i++) {
 		for (var j in allservices[i].imagelist) {
 			var img = document.createElement("img");
 			img.onload = function() { updater.onImgLoad(); }
@@ -894,7 +894,7 @@ Updater.prototype.loadServices = function() {
 			img.id = "service_" + allservices[i].name.toLowerCase() + "_" + j;
 			document.body.appendChild(img);
 		}
-  }
+	}
 }
 
 Updater.prototype.onImgLoad = function() {
