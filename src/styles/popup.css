@@ -1,0 +1,54 @@
+body {
+	font-size: 84%;
+	font-family: Helvetica, Arial, sans-serif;
+	margin: 5px;
+	color: black;
+	min-width: 300px;
+	max-width: 550px;
+	overflow: hidden;
+}
+a {
+	color: blue;
+	font-size: 100%;
+}
+img {
+	border: none;
+	width: 32px;
+	height: 32px;
+	float: left;
+	margin-right: 5px;
+}
+.clear {
+	clear: both;
+}
+p {
+	margin: 0px;
+}
+.preview {
+	color: #BFBFBF;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.name, .title {
+	font-weight: bold;
+}
+#links {
+	text-align: right;
+}
+#noopen {
+	color: #BFBFBF;
+}
+.extra {
+	display: block;
+	float: right;
+	position: relative;
+	background-color: white;
+	z-index: 1;
+}
+#dynamiccontent > div {
+	overflow: hidden;
+	white-space: nowrap;
+}
+#popupHint {
+	display: none;
+}

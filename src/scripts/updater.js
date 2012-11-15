@@ -876,6 +876,9 @@ Updater.prototype.loadServices = function() {
 		this.services = {};
 		for (var i = 0; i < order.length; i++) {
 			var classname = settings.get(order[i], "service");
+			if (!window[classname]) {
+				continue;
+			}
 			this.services[order[i]] = new window[classname](order[i]);
 		}
 	}

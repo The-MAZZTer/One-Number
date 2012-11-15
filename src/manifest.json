@@ -31,7 +31,6 @@
 			"scripts/services/gmail.js",
 			"scripts/services/googlereader.js",
 			"scripts/services/googlevoice.js",
-			"scripts/services/googlewave.js",
 			"scripts/background.js"
 		],
     "persistent": true
@@ -45,8 +44,6 @@
     "http://www.google.com/reader/*",
     "https://www.google.com/reader/*",
     "http://www.google.com/voice/*",
-    "https://www.google.com/voice/*",
-    "http://wave.google.com/*",
-    "https://wave.google.com/*"
+    "https://www.google.com/voice/*"
   ]
 }

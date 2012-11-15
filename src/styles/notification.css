@@ -1,0 +1,21 @@
+body {
+	margin: 5px;
+}
+#icon {
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 5px;
+}
+#time {
+	position: absolute;
+	opacity: 0.5;
+	right: 5px;
+	bottom: 5px;
+}
+p {
+	margin: 0px;
+}
+#nav_open {
+	display: none;
+	float: right;
+}

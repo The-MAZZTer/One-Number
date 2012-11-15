@@ -4,7 +4,7 @@
 		"description": "Nom de l'extension qui apparait sur la page des extensions."
 	},
 	"description": {
-		"message": "Vérifiez rapidement Gmail, Google Reader, Google Voice et Google Wave. Quatre sources, une seule extension.",
+		"message": "Vérifiez rapidement Gmail, Google Reader, et Google Voice. Quatre sources, une seule extension.",
 		"description": "La description apparaissant sur la page des extensions."
 	},
 	"default_title": {
@@ -477,22 +477,6 @@
 		"message": "Vérifier chaque message non lu, et non uniquement la Boîte de réception.",
 		"description": "Légende d'une case à cocher."
 	},
-	"options_gwappsdomain": {
-		"message": "Domaine Google Apps à vérifier (laissez vide pour Google Wave): ",
-		"description": "Légende d'une zone de texte."
-	},
-	"options_gwminnav": {
-		"message": "Réduire le panneau Navigation à l'ouverture de Google Wave.",
-		"description": "Légende d'une case à cocher."
-	},
-	"options_gwmincontact": {
-		"message": "Réduire le panneau Contacts à l'ouverture de Google Wave.",
-		"description": "Légende d'une case à cocher."
-	},
-	"options_gwminsearch": {
-		"message": "Réduire le panneau Search à l'ouverture de Google Wave.",
-		"description": "Légende d'une case à cocher."
-	},
 	
 	"ok": {
 		"message": "OK",
@@ -614,21 +598,6 @@
 		"description": "Nom du service."
 	},
 	
-	"googlewave_displayname": {
-		"message": "Google Wave",
-		"description": "Nom du service."
-	},
-	"googlewave_unreadblips": {
-		"message": "$unreadcount$ blips non lus.",
-		"description": "Affiche le nombre de blips non lus.",
-		"placeholders": {
-			"unreadcount": {
-				"content": "$1",
-				"example": "0"
-			}
-		}
-	},
-	
 	"changelog_title": {
 		"message": "$name$ - Version: $version$",
 		"description": "Titre et en-tête de la page changelog.html",
@@ -742,14 +711,6 @@
 	},
 	"resource3after": {
 		"message": "Unknown origin, artist, and license.",
-		"description": "Description of resource."
-	},
-	"resource4url": {
-		"message": "Google Wave popup icons",
-		"description": "Text of link to the aforementioned image."
-	},
-	"resource4after": {
-		"message": "by dolphinsdock and licensed under the Creative Commons Attribution-Share Alike 2.0 Generic License.",
 		"description": "Description of resource."
 	}
 }

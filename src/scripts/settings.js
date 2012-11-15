@@ -897,18 +897,6 @@ Settings.prototype.importOldSettings = function() {
 			map: {
 				"ShowAll": "showAll"
 			}
-		},
-		"gw": {
-			className: "GoogleWave",
-			map: {
-				"AppsDomain": {
-					mapTo: "appsDomain",
-					translate: function(x) { return x; } // JSON.stringify will be used
-				},
-				"MinimizeContact": "minimizeContact",
-				"MinimizeNav": "minimizeNav",
-				"MinimizeSearch": "minimizeSearch"
-			}
 		}
 	};
 
