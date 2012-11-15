@@ -65,7 +65,11 @@ Service.prototype.onTabUpdated = function(tabId, url) {
 	if (!url) {
     var me = this;
     chrome.tabs.get(tabId, function(tab) {
-      me.onTabUpdated(tabId, tab.url);
+			if (!tab) {
+				me.onTabRemoved(tabId);
+			} else {
+				me.onTabUpdated(tabId, tab.url);
+			}
     });
     return;
   }

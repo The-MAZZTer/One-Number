@@ -7,18 +7,15 @@
     <meta charset="utf-8" /> 
     <link rel="icon" type="image/png" href="images/pages/favicon.png" />
 		<link rel="stylesheet" href="styles/common.css" type="text/css" />
-		<style type="text/css">
-			body {
-			  margin: 10px;
-			}
-		</style>
+		<link rel="stylesheet" href="styles/legal.css" type="text/css" />
 		<script type="text/javascript" src="scripts/pages.js"></script>
+		<script type="text/javascript" src="scripts/legal.js"></script>
 	</head>
-  <body onload="i18nTemplate.process(document); updateNav();">
+  <body>
 		<div id="nav">
 			<div id="nav_fade"></div>
 			<span id="nav_noopen" i18n-content="nav_noopen">No unread</span>
-			<a href="javascript:;" id="nav_open" onclick="return unread();"
+			<a href="javascript:;" id="nav_open"
 				i18n-content="nav_open">Open unread</a>
 			|
 			<a href="options.html" i18n-content="nav_options">Options</a>
@@ -30,8 +27,7 @@
     <div id="header">
       <h1 i18n-content="legal_title">One Number - Legal Info</h1>
     </div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('disclaimer');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="disclaimerbutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="disclaimer">Disclaimer</span>
@@ -42,8 +38,7 @@
 			<p i18n-content="disclaimer3"></p>
 			<p i18n-content="disclaimer4"></p>
 		</div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('apologies');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="apologiesbutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="apologies">Apologies</span>
@@ -54,8 +49,7 @@
 			<p i18n-content="apologies3"></p>
 			<p i18n-content="apologies4"></p>
 		</div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('resources');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="resourcesbutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="resources">Resource Attribution</span>

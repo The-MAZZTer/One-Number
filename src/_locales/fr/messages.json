@@ -106,7 +106,7 @@
 		"description": "Est affiché à la place de la prévisualisation du service quand celui rencontre une réponse du serveur qui ne peut être analysée."
 	},
 	"preview_login": {
-		"message": "Cliquez <a href=\"javascript:null;\" onclick=\"tabopen('$uid$');\">ici</a> pour vous connecter.",
+		"message": "Cliquez <a href=\"javascript:null;\" class=\"loginlink\">ici</a> pour vous connecter.",
 		"description": "Est affiché à la place de la prévisualisation du service quand la réponse indique que vous êtes déconnecté.",
 		"placeholders": {
 			"uid": {

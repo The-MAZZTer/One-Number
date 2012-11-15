@@ -1,6 +1,7 @@
 {
+	"manifest_version": 2,
   "name": "__MSG_name__",
-  "version": "1.5.4.16",
+  "version": "1.5.5.17",
   "description": "__MSG_description__",
   "icons": {
     "16": "images/icon/16.png",
@@ -19,7 +20,22 @@
     "default_popup": "popup.html"
   },
 
-  "background_page": "background.html",
+  "background": {
+    "scripts": [
+			"scripts/extend.js",
+			"scripts/quicksort.js",
+			"scripts/timer.js",
+			"scripts/settings.js",
+			"scripts/updater.js",
+			"scripts/services/base.js",
+			"scripts/services/gmail.js",
+			"scripts/services/googlereader.js",
+			"scripts/services/googlevoice.js",
+			"scripts/services/googlewave.js",
+			"scripts/background.js"
+		],
+    "persistent": true
+  },
   "options_page": "options.html",
   "permissions": [
     "tabs",

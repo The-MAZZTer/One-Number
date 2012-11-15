@@ -219,7 +219,7 @@ Updater.prototype.update = function() {
 	}
 	chrome.browserAction.setTitle({title: this.buildTooltip(services)});
 	
-	var views = chrome.extension.getViews();
+	var views = chrome.extension.getViews({});
 	for (var i = 0; i < views.length; i++) {
 		if (views[i].onupdate) {
 			views[i].onupdate(this);
@@ -314,7 +314,7 @@ Updater.prototype.popupOpened = function(p) {
 	if (this.getOneClickOpenUnread() && this.getUnreadServices(false).length >
 		0) {
 		
-		this.popup.window.close();
+		p.close();
 		this.popupOpenUnread(false);
 		return;
 	}
@@ -362,9 +362,8 @@ Updater.prototype.updatePopup = function() {
 	}
 	
 	var content = doc.getElementById("dynamiccontent");
-	while (content.firstChild != null) {
-		content.removeChild(content.firstChild);
-	}
+	
+	var frag = doc.createDocumentFragment();
 	
 	var first = true;
 	
@@ -377,11 +376,12 @@ Updater.prototype.updatePopup = function() {
 		} else {
 			div = doc.createElement("div");
 		}
+		div.uid = this.services[i].uid;
 		
 		if (first || settings.get("popup", "showseparators")) {
 			var hr = doc.createElement("hr");
 			if (first) {
-				content.appendChild(hr);
+				frag.appendChild(hr);
 			} else {
 				div.appendChild(hr);
 			}
@@ -391,9 +391,7 @@ Updater.prototype.updatePopup = function() {
 		if (div.nodeName != "SPAN" && extra && settings.get(i, "showextra")) {
 			var compose = doc.createElement("a");
 			compose.href = "javascript:;";
-			compose.setAttribute("onclick", "openExtra('" + this.services[i].uid +
-				"');");
-			compose.className = "compose";
+			compose.className = "extra";
 			compose.textContent = chrome.i18n.getMessage("gmail_compose");
 			div.appendChild(compose);
 		}
@@ -401,7 +399,6 @@ Updater.prototype.updatePopup = function() {
 		var a = doc.createElement("a");
 		a.href = "javascript:;";
 		a.className = "name";
-		a.setAttribute("onclick", "tabopen('" + this.services[i].uid + "');");
 		
 		var unread = this.services[i].getUnreadCount();
 		var preview = this.services[i].getPreview();
@@ -475,10 +472,15 @@ Updater.prototype.updatePopup = function() {
 			div.appendChild(clear);
 		}
 
-		content.appendChild(div);
+		frag.appendChild(div);
 		
 		first = false;
 	}
+	
+	while (content.firstChild != null) {
+		content.removeChild(content.firstChild);
+	}
+	content.appendChild(frag);
 }
 
 // openedFromPopup is false when opened straight from the badge

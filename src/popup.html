@@ -2,121 +2,20 @@
 <html i18n-values="style:textdirection;">
   <head>
     <meta charset="utf-8" /> 
-    <!-- Style borrowed from Chrome for UI consistancy -->
-    <style type="text/css">
-      body {
-        font-size: 84%;
-        font-family: Helvetica, Arial, sans-serif;
-        margin: 5px;
-        color: black;
-        min-width: 300px;
-        max-width: 550px;
-        overflow: hidden;
-      }
-      a {
-        color: blue;
-        font-size: 100%;
-      }
-      img {
-        border: none;
-        width: 32px;
-        height: 32px;
-        float: left;
-        margin-right: 5px;
-      }
-      .clear {
-        clear: both;
-      }
-      p {
-        margin: 0px;
-      }
-      .preview {
-        color: #BFBFBF;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-      .name, .title {
-        font-weight: bold;
-      }
-      #links {
-        text-align: right;
-      }
-      #noopen {
-        color: #BFBFBF;
-      }
-      .compose {
-        display: block;
-        float: right;
-				position: relative;
-				background-color: white;
-				z-index: 1;
-      }
-			#dynamiccontent > div {
-        overflow: hidden;
-        white-space: nowrap;
-			}
-			#popupHint {
-				display: none;
-			}
-    </style>
+		<link rel="stylesheet" type="text/css" href="styles/popup.css" />
 		<script type="text/javascript" src="scripts/pages.js"></script>
-    <script type="text/javascript">
-			var bp;
-			var u;
-		
-      function init() {
-				bp = chrome.extension.getBackgroundPage();
-				u = bp.updater;
-			
-				i18nTemplate.process(document);
-        u.popupOpened(this);
-      }
-      
-      function unInit() {
-        u.popupClosed();
-      }
-      
-      function openUnread() {
-        u.popupOpenUnread(true);
-        window.close();
-      }
-      
-      function refresh() {
-        u.refresh();
-      }
-      
-      function tabopen(index) {
-        u.openByUID(index);
-        window.close();
-      }
-      
-      function openOptions() {
-        u.openPage("options.html");
-        window.close();
-      }
-      
-      function openExtra(index) { 
-        u.openExtra(index);
-        window.close();
-      }
-			
-      function openServiceConfig() {
-        u.openPage("options.html#services");
-				bp.settings.set("hidden", "showPopupHint", false)
-        window.close();
-      }
-    </script>
+		<script type="text/javascript" src="scripts/popup.js"></script>
   </head>
-  <body onload="init();" onunload="unInit();">
+  <body>
     <div id="links">
-      <a href="javascript:;" onclick="openOptions();"
+      <a href="javascript:;" id="openOptions"
 				i18n-content="popup_options">Options</a>
       |
-      <a href="javascript:;" onclick="refresh();"
+      <a href="javascript:;" id="refresh"
 				i18n-content="popup_refresh">Refresh</a>
       |
       <span id="noopen" i18n-content="no_unread">No unread</span>
-      <a href="javascript:;" onclick="openUnread();" id="open"
+      <a href="javascript:;" id="open"
 				i18n-content="open_unread">Open unread</a>
     </div>
     
@@ -124,7 +23,7 @@
 		
 		<div id="popupHint">
 			<hr />
-			<a href="javascript:;" onclick="openServiceConfig()" i18n-content="addmore">Add more...</a>
+			<a href="javascript:;"id="openServiceConfig" i18n-content="addmore">Add more...</a>
 		</div>
   </body>
 </html>

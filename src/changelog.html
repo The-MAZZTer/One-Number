@@ -7,44 +7,15 @@
     <meta charset="utf-8" /> 
     <link rel="icon" type="image/png" href="images/pages/favicon.png" />
 		<link rel="stylesheet" href="styles/common.css" type="text/css" />
-		<style type="text/css">
-			p {
-				margin: 0px;
-			}
-			.para {
-				margin-top: 1em;
-			}
-			body {
-			  margin: 10px;
-			}
-		</style>
+		<link rel="stylesheet" href="styles/changelog.css" type="text/css" />
 		<script type="text/javascript" src="scripts/pages.js"></script>
-		<script type="text/javascript">
-			function fixHeader() {
-				var manifest = chrome.extension.getBackgroundPage().manifest;
-				if (!manifest) {
-					return;
-				}
-
-				var name = chrome.i18n.getMessage("name");
-				var version = manifest.version;
-					
-				var text = chrome.i18n.getMessage("changelog_title", [
-					name,
-					version
-				]);
-					
-				document.getElementById("title").textContent = text;
-				document.getElementById("headertitle").textContent = text;
-				document.getElementById("name").textContent = text;
-			}
-		</script>
+		<script type="text/javascript" src="scripts/changelog.js"></script>
 	</head>
-  <body onload="i18nTemplate.process(document); fixHeader(); updateNav();">
+  <body>
 		<div id="nav">
 			<div id="nav_fade"></div>
 			<span id="nav_noopen" i18n-content="nav_noopen">No unread</span>
-			<a href="javascript:;" id="nav_open" onclick="return unread();"
+			<a href="javascript:;" id="nav_open"
 				i18n-content="nav_open">Open unread</a>
 			|
 			<a href="options.html" i18n-content="nav_options">Options</a>
@@ -56,8 +27,7 @@
     <div id="header">
       <h1 id="headertitle" i18n-content="name">One Number</h1>
     </div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('authorinfo');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="authorinfoutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="author_info">Extension and Author Info</span>
@@ -70,8 +40,17 @@
 			<p><a href="mailto:megazzt@gmail.com">megazzt@gmail.com</a></p>
 			<p class="para" i18n-content="description"></p>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_5_4');">
+    <a class="section-header" href="javascript:;">
+      <img src="images/pages/collapse.png" id="v1_5_5button" alt="Collapse"
+        title="Collapse" i18n-values="alt:collapse; title:collapse;" />
+      <span>v1.5.5</span>
+    </a>
+		<div class="section" id="v1_5_5">
+			<ul>
+				<li>Fix for another API change (this one definitely a bug) in Chrome 19.</li>
+			</ul>
+		</div>
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="v1_5_4button" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span>v1.5.4</span>
@@ -81,8 +60,7 @@
 				<li>Fix for breaking API change in Chrome 19.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_5_3');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="v1_5_3button" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span>v1.5.3</span>
@@ -96,8 +74,7 @@
 				<li>Worked around missing V8 .inherits API in Chrome 14.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_5_2');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="v1_5_2button" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span>v1.5.2</span>
@@ -115,8 +92,7 @@
 					failed to load.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_5_1');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="v1_5_1button" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span>v1.5.1</span>
@@ -126,8 +102,7 @@
 				<li>Fixed being unable to add services.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_5');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="v1_5button" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span>v1.5</span>
@@ -200,8 +175,7 @@
 					them inthe collapsed state.</li>
 			</ul>
 		</div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('knownbugs');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="knownbugsbutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="known_bugs">Known Bugs</span>
@@ -244,8 +218,7 @@
 					Home page option.  A toggle will be added to restore old behavior.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('futureplans');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/collapse.png" id="futureplansbutton" alt="Collapse"
         title="Collapse" i18n-values="alt:collapse; title:collapse;" />
       <span i18n-content="future_plans">Future Plans</span>
@@ -275,8 +248,7 @@
 					new item, etc).</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_3R2');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_3R2button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.3 R2</span>
@@ -287,8 +259,7 @@
 					numbers for parameters instead of strings.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_3');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_3button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.3</span>
@@ -322,8 +293,7 @@
 					it easier to view.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_2R3');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_2R3button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.2 R3</span>
@@ -336,8 +306,7 @@
 					callback</a>.</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_2R2');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_2R2button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.2 R2</span>
@@ -349,8 +318,7 @@
 				<li>Turned off console logging.  Might help memory "leak"?</li>
 			</ul>
 		</div>
-    <a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_2');">
+    <a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_2button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.2</span>
@@ -390,8 +358,7 @@
 					changed.</li>
 			</ul>
 		</div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_1');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_1button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.1</span>
@@ -409,8 +376,7 @@
 				<li>Fixed bug where services could stop updating.</li>
 			</ul>
 		</div>
-		<a class="section-header" href="javascript:;"
-      onclick="expandCollapse('v1_0');">
+		<a class="section-header" href="javascript:;">
       <img src="images/pages/expand.png" id="v1_0button" alt="Expand"
         title="Expand" i18n-values="alt:expand; title:expand;" />
       <span>v1.0</span>

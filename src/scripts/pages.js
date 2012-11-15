@@ -96,6 +96,8 @@ function unread() {
 }
 
 function updateNav(u) {
+	$("nav_open").onclick = unread;
+
 	window.onupdate = updateNav;
 
 	if (!u) {

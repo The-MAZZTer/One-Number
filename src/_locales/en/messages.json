@@ -105,7 +105,7 @@
 		"description": "Displayed instead of a service preview when a service response cannot be parsed."
 	},
 	"preview_login": {
-		"message": "Click <a href=\"javascript:;\" onclick=\"tabopen('$uid$');\">here</a> to log in.",
+		"message": "Click <a href=\"javascript:;\" class=\"loginlink\">here</a> to log in.",
 		"description": "Displayed instead of a service preview when a service response indicates you are logged out.",
 		"placeholders": {
 			"uid": {
