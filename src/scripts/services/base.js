@@ -58,7 +58,7 @@ Service.prototype.doesTabHaveService = function(url) {
 }
 
 Service.prototype.log = function(message) {
-	log(this.__proto__.constructor.name + ": " + message);
+	console.log(this.__proto__.constructor.name + ": " + message);
 }
 
 Service.prototype.onTabUpdated = function(tabId, url) {

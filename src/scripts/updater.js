@@ -25,7 +25,7 @@ Updater.prototype.getBadgeServices = function() {
 }
 	
 Updater.prototype.start = function() {
-	log("Updater: Starting update.");
+	console.log("Updater: Starting update.");
 		
 	for (var i in this.services) {
 		this.services[i].update();
@@ -34,7 +34,7 @@ Updater.prototype.start = function() {
 }
 
 Updater.prototype.refresh = function() {
-	log("Updater: Starting update.");
+	console.log("Updater: Starting update.");
 		
 	for (var i in this.services) {
 		this.services[i].resetCheckTime();
@@ -139,7 +139,7 @@ Updater.prototype.buildNotification = function(services, doc) {
 }
 
 Updater.prototype.update = function() {
-	log("Updater: Updating UI.");
+	console.log("Updater: Updating UI.");
 
 	var services = this.getBadgeServices();
 		
@@ -266,7 +266,7 @@ Updater.prototype.showNotification = function(timerFired) {
 
 	this.hideNotification();
 	
-	log("Updater: Showing notification.");
+	console.log("Updater: Showing notification.");
 	
 	this.playNotifySound();
 	
@@ -286,11 +286,11 @@ Updater.prototype.showNotification = function(timerFired) {
 	this.notification = notifications.createHTMLNotification("notification.html");
 	this.notification.updater = this;
 	this.notification.onerror = function() {
-		log("Updater: Notification error.");
+		console.log("Updater: Notification error.");
 		this.updater.notification = null;
 	}
 	this.notification.onclose = function() {
-		log("Updater: Notification closed.");
+		console.log("Updater: Notification closed.");
 		this.updater.notification = null;
 	}
 	
@@ -299,7 +299,7 @@ Updater.prototype.showNotification = function(timerFired) {
 	
 Updater.prototype.hideNotification = function() {
 	if (this.notification) {
-		log("Updater: Hiding notification.");
+		console.log("Updater: Hiding notification.");
 
 		this.notification.cancel();
 		this.notification = null;
@@ -307,7 +307,7 @@ Updater.prototype.hideNotification = function() {
 }
 	
 Updater.prototype.popupOpened = function(p) {
-	log("Updater: Popup opened.");
+	console.log("Updater: Popup opened.");
 	
 	this.popup = p;
 	
@@ -327,13 +327,13 @@ Updater.prototype.popupOpened = function(p) {
 }
 	
 Updater.prototype.popupClosed = function() {
-	log("Updater: Popup closed.");
+	console.log("Updater: Popup closed.");
 		
 	this.popup = null;
 }
 	
 Updater.prototype.updatePopup = function() {
-	log("Updater: Updating popup.");
+	console.log("Updater: Updating popup.");
 	
 	if (this.popup == null) {
 		return;
@@ -481,6 +481,8 @@ Updater.prototype.updatePopup = function() {
 		content.removeChild(content.firstChild);
 	}
 	content.appendChild(frag);
+	
+	this.popup.popupUpdated();
 }
 
 // openedFromPopup is false when opened straight from the badge
@@ -505,7 +507,7 @@ Updater.prototype.getUnreadServices = function(openedFromPopup) {
 }
 
 Updater.prototype.popupOpenUnread = function(openedFromPopup) {
-	log("Updater: Open Unread clicked in popup.");
+	console.log("Updater: Open Unread clicked in popup.");
 	
 	var services = this.getUnreadServices(openedFromPopup);
 	for (var i = 0; i < services.length; i++) {
@@ -542,7 +544,7 @@ Updater.prototype.getAlwaysRefresh = function() {
 }
 
 Updater.prototype.openPage = function(url, service, createWindow) {
-	log("Updater: Opening " + url);
+	console.log("Updater: Opening " + url);
 
 	var compareurl = url.toLowerCase();
 	var index = url.indexOf("://");
@@ -600,7 +602,7 @@ Updater.prototype.openPage = function(url, service, createWindow) {
 }
 
 Updater.prototype.openByUID = function(index) {
-	log("Updater: openByUID fired.");
+	console.log("Updater: openByUID fired.");
 	this.openPage(this.services[index].getUrl(), this.services[index], true);
 }
 

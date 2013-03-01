@@ -1,6 +1,8 @@
 var bp;
 var u;
 
+NodeList.prototype.forEach = Array.prototype.forEach;
+
 window.onload = function() {
 	bp = chrome.extension.getBackgroundPage();
 	u = bp.updater;
@@ -27,9 +29,9 @@ window.onload = function() {
 
 	i18nTemplate.process(document);
 	u.popupOpened(this);
-	
-	NodeList.prototype.forEach = Array.prototype.forEach;
-	
+}
+
+function popupUpdated() {
 	document.querySelectorAll(".extra").forEach(function(val, index, a) {
 		val.onclick = openExtra;
 	});

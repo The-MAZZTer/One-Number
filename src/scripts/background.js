@@ -1,4 +1,3 @@
-var debug = false;
 var manifest = null;
 
 window.onload = function() {
@@ -29,23 +28,20 @@ window.onload = function() {
 			return;
 		}
 		if (!xhr.responseText) {
-			debug = true;
-			log("Unable to load manifest.json.");
+			console.log("Unable to load manifest.json.");
 			afterManifestLoad();
 			return;
 		}
 		
 		manifest = JSON.parse(xhr.responseText);
 		if (!manifest) {
-			debug = true;
-			log("Unable to parse manifest.json.");
+			console.log("Unable to parse manifest.json.");
 			afterManifestLoad();
 			return;
 		}
 
 		// If we have an update url we have been installed from the gallery
 		// (or elsewhere).  Don't print debug messages,
-		debug = !manifest.update_url;
 		afterManifestLoad();
 	}
 	xhr.send();
@@ -53,12 +49,6 @@ window.onload = function() {
 
 function $(a) {
 	return document.getElementById(a);
-}
-
-function log() {
-	if (debug) {
-		console.log.apply(console, arguments);
-	}
 }
 
 var settings;
