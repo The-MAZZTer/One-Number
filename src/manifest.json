@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
   "name": "__MSG_name__",
-  "version": "1.5.5.17",
+  "version": "1.5.6.18",
   "description": "__MSG_description__",
   "icons": {
     "16": "images/icon/16.png",

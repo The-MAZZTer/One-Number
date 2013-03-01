@@ -4,10 +4,8 @@ Known Bugs:
 - If services update their status while a notification is open, the notification retains the old status until it closes.
 - Gmail preview is using innerHTML, so any HTML in the preview mangles the popup.
 - With no windows open, Open unread in notification does not work.
-- Google Wave checker is hackish, loads the main Google Wave HTML page and parses out stuff from the loaded scripts.  There is an official extension, figure out what APIs they use and replicate that behavior.
 
 Stuff To Add:
-- Console logging turns off if the extension is installed from the Chrome Web Store.  There's no need for this and keeping it on all the time could give users something to attach to bug reports that might be helpful.
 - "Open all services" link in popup that ignores unread messages state.
 - Re-add old icon for people who want it back.  Add selection option in Options.  Allow user to pick any image file, maybe?
 - Add option to revert Google Reader page to default, instead of forcing All Items view.
