@@ -1,0 +1,18 @@
+<mat-form-field>
+	<mat-label>Override name</mat-label>
+	<input matInput type="text" [placeholder]="feed?.name || ''" [(ngModel)]="overrideName" [ngModelOptions]="{standalone: true}" />
+</mat-form-field>
+
+<mat-checkbox #defaultQueryIntervalCheckbox [(ngModel)]="useDefaultQueryInterval" [ngModelOptions]="{standalone: true}">Use default refresh interval ({{defaultQueryInterval}} minutes)</mat-checkbox>
+<mat-form-field>
+	<mat-label>Custom refresh interval</mat-label>
+	<input matInput type="number" [required]="!useDefaultQueryInterval" [(ngModel)]="actualQueryInterval" [ngModelOptions]="{standalone: true}" [disabled]="useDefaultQueryInterval" />
+	<span matSuffix>minutes</span>
+</mat-form-field>
+
+<mat-radio-group [(ngModel)]="notification" [ngModelOptions]="{standalone: true}">
+	<label>Notifications</label>
+	<mat-radio-button [value]="0">Use default value ({{defaultNotification ? "Show update notifications" : "Never show notifications"}})</mat-radio-button>
+	<mat-radio-button [value]="-1">Never show notifications</mat-radio-button>
+	<mat-radio-button [value]="1">Show update notifications</mat-radio-button>
+</mat-radio-group>

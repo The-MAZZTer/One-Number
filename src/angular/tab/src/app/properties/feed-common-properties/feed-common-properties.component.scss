@@ -1,0 +1,11 @@
+:host {
+	display: block;
+
+	mat-form-field, mat-radio-group, mat-radio-button, mat-radio-group > label {
+		display: block;
+	}
+
+	mat-radio-group > label, mat-radio-button {
+		height: 24px;
+	}
+}

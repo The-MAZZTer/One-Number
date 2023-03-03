@@ -1,0 +1,75 @@
+.hidden {
+	display: none;
+}
+
+:host {
+	flex: 1 1 0;
+
+	mat-button-toggle-group {
+		width: 100%;
+		height: 100%;
+		box-sizing: border-box;
+		overflow: auto;
+
+		mat-tree {
+			padding: 20px 0;
+			min-width: 100%;
+	
+			.dragTreePlaceholder {
+				height: 0;
+			}
+	
+			li {
+				.mat-icon-button {
+					width: 20px;
+				}
+				list-style: none;
+	
+				mat-button-toggle {
+					overflow: visible;
+	
+					.icon {
+						display: inline-block;
+						vertical-align: middle;
+	
+						margin: 0 10px;
+						
+						width: 24px;
+						height: 24px;
+	
+						> mat-icon, > img {
+							vertical-align: top;
+	
+							width: 24px;
+							height: 24px;	
+						}
+						> img {
+							border-radius: 4px;
+						}
+					}
+				}
+			}
+			mat-tree-node.divider {
+				min-height: 1px;
+				display: block;
+			}
+			mat-nested-tree-node ul {
+				margin: 0;
+				padding-inline-start: 20px;
+			}
+		}
+	}	
+}		
+
+mat-button-toggle-group:not(.edit) mat-tree {
+	.add {
+		display: none;
+	}
+	button mat-icon.onlyEditMode {
+		display: none;
+	}
+}
+
+:host ::ng-deep mat-tree li mat-button-toggle button .mat-button-toggle-label-content {
+	padding-left: 0;
+}

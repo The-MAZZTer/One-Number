@@ -1,0 +1,9 @@
+<h1>{{caption}}</h1>
+<h3>Enter the desired name and then click Add:</h3>
+
+<form #form>
+	<app-folder-properties [folder]="folder"></app-folder-properties>
+	<p>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity()" (click)="submit()">Add</button>
+	</p>
+</form>

@@ -1,0 +1,73 @@
+<mat-button-toggle-group [value]="currentFeedListItem?.uid" [class.edit]="editMode">
+	<mat-tree #feedList [dataSource]="feedListDataSource" [treeControl]="feedListTreeControl">
+		<!-- cdkDropList (cdkDropListDropped)="feedListDrop($event)"> -->
+
+		<mat-tree-node *matTreeNodeDef="let node; when: isDivider" [ngClass]="node.class">
+			<mat-divider></mat-divider>
+		</mat-tree-node>
+		<mat-tree-node *matTreeNodeDef="let node" [ngClass]="node.class">
+			<!-- cdkDrag [cdkDragDisabled]="node.type !== FeedListItemTypes.folder && node.type !== FeedListItemTypes.feed"
+			[cdkDragData]="node" (mouseenter)="feedListDragHover(node)" (mouseleave)="feedListDragHoverEnd()"
+			(cdkDragStarted)="feedListDragStart()" (cdkDragReleased)="feedListDragEnd()">
+
+			<div class="dragTreePlaceholder" *cdkDragPlaceholder></div> -->
+		
+			<li class="mat-tree-node">
+				<button mat-icon-button disabled></button>
+				<mat-button-toggle (change)="navigateTo(node, $event)" [checked]="isCurrentNode(node)"
+					[value]="node.uid" [id]="node.uid" [disabled]="!node.enabledInEditMode && editMode"
+					[attr.draggable]="editMode && node.isDraggable" [disableRipple]="editMode && node.isDraggable"
+					(dragstart)="feedListDragStart($event, node)" (dragend)="feedListDragEnd($event, node)"
+					(dragenter)="feedListDragEnter($event, node)" (dragover)="feedListDragOver($event, node);"
+					(dragleave)="feedListDragLeave($event, node)" (drop)="feedListDrop($event, node);">
+
+					<span class="icon" [matBadge]="node.unread" [matBadgeColor]="node.error ? 'warn' : 'accent'"
+						[matBadgeHidden]="node.type === FeedListItemTypes.all && editMode"
+						[matTooltipDisabled]="!node.error" [matTooltip]="node.error">
+
+						<mat-icon *ngIf="node.icon == null" class="mat-icon-rtl-mirror" aria-hidden="true">{{editMode ? node.editGlyph : node.glyph}}</mat-icon>
+						<img aria-hidden="true" *ngIf="node.icon != null" [src]="node.icon" draggable="false" />	
+					</span>
+					<span> {{editMode ? node.editName : node.name}}</span>
+				</mat-button-toggle>
+			</li>
+		</mat-tree-node>
+		<mat-nested-tree-node *matTreeNodeDef="let node; when: feedListItemHasChild"
+			[ngClass]="node.class">
+			<!-- cdkDrag [cdkDragDisabled]="node.type !== FeedListItemTypes.folder && node.type !== FeedListItemTypes.feed"
+			[cdkDragData]="node" (mouseenter)="feedListDragHover(node)" (mouseleave)="feedListDragHoverEnd()"
+			(cdkDragStarted)="feedListDragStart()" (cdkDragReleased)="feedListDragEnd()">
+
+			<div class="dragTreePlaceholder" *cdkDragPlaceholder></div> -->
+
+			<li>
+				<div class="mat-tree-node">
+					<button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+						<mat-icon class="mat-icon-rtl-mirror" aria-hidden="true" [class.onlyEditMode]="node.children.value.length == 1">
+							{{feedListTreeControl.isExpanded(node) ? "expand_more" : "chevron_right"}}
+						</mat-icon>
+					</button>
+					<mat-button-toggle (change)="navigateTo(node, $event)" [checked]="isCurrentNode(node)"
+						[value]="node.uid" [id]="node.uid" [disabled]="!node.enabledInEditMode && editMode"
+						[attr.draggable]="editMode && node.isDraggable" [disableRipple]="editMode && node.isDraggable"
+						(dragstart)="feedListDragStart($event, node)" (dragend)="feedListDragEnd($event, node)"
+						(dragenter)="feedListDragEnter($event, node)" (dragover)="feedListDragOver($event, node);"
+						(dragleave)="feedListDragLeave($event, node)" (drop)="feedListDrop($event, node);">
+							
+						<span class="icon" [matBadge]="node.unread" [matBadgeColor]="node.error ? 'warn' : 'accent'"
+							[matBadgeHidden]="node.type === FeedListItemTypes.all && editMode"
+							[matTooltipDisabled]="!node.error" [matTooltip]="node.error">
+
+							<mat-icon *ngIf="node.icon == null" class="mat-icon-rtl-mirror" aria-hidden="true">{{editMode ? node.editGlyph : node.glyph}}</mat-icon>
+							<img aria-hidden="true" *ngIf="node.icon != null" [src]="node.icon" draggable="false" />	
+						</span>
+						<span> {{editMode ? node.editName : node.name}}</span>
+					</mat-button-toggle>
+				</div>
+				<ul [class.hidden]="!feedListTreeControl.isExpanded(node)">
+					<ng-container matTreeNodeOutlet></ng-container>
+				</ul>
+			</li>
+		</mat-nested-tree-node>
+	</mat-tree>
+</mat-button-toggle-group>

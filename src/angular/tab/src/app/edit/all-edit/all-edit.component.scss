@@ -1,0 +1,47 @@
+:host {
+	display: block;
+
+	> * {
+		margin-left: 20px;
+		margin-right: 20px;
+	}
+	> h1 {
+		margin-top: 15px;
+		margin-bottom: 0;
+	}
+	> h3 {
+		margin-top: 0;
+		margin-bottom: 15px;
+	}
+	> form {
+		display: block;
+		
+		mat-form-field, mat-checkbox, mat-radio-button, mat-radio-group {
+			display: block;
+			max-width: 500px;
+		}
+
+		mat-radio-group:not(:first-child) {
+			margin-top: 1em;
+		}
+		mat-radio-group > label {
+			display: block;
+		}
+		mat-radio-group > label, mat-radio-button {
+			height: 24px;
+		}
+	
+		> p {
+			margin-top: 1em;
+			display: flex;
+			direction: row;
+
+			> .spacer {
+				flex: 1 0 0;
+			}
+			> button:not(:last-child) {
+				margin-right: 10px;
+			}
+		}
+	}
+}

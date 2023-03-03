@@ -1,0 +1,62 @@
+import * as db from "idb/with-async-ittr";
+
+export interface FeedSchema {
+	id?: number,
+	parentFolderId: number,
+	type: string,
+	icon: string,
+	name: string,
+	overrideName: string,
+	queryInterval: number,
+	description: string,
+
+	lastRefresh: Date,
+	lastUpdated: Date,
+	lastError: string
+};
+
+export interface FolderSchema {
+	id?: number,
+	parentFolderId: number,
+	name: string
+};
+
+export interface FeedItemSchema {
+	id?: number,
+	feedId: number,
+	type: string,
+	guid: string,
+	name: string,
+	url: string,
+	published: Date,
+	author: string,
+	content: string,
+
+	read: Date,
+	star: boolean
+};
+
+export interface Database extends db.DBSchema {
+	folders: {
+		key: number,
+		value: FolderSchema,
+		indexes: {
+			folderList: number
+		}
+	}
+	feeds: {
+		key: number,
+		value: FeedSchema,
+		indexes: {
+			folderList: number
+		}
+	},
+	feedItems: {
+		key: number,
+		value: FeedItemSchema,
+		indexes: {
+			guid: [number, string],
+			specificFeed: number
+		}
+	}
+}

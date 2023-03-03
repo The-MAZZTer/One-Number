@@ -1,0 +1,64 @@
+<h1>Options</h1>
+<h3>Adjust the following settings, and click Save:</h3>
+
+<form #form *ngIf="options">
+	<mat-accordion multi="true">
+		<mat-expansion-panel expanded togglePosition="before">
+			<mat-expansion-panel-header>
+				<mat-panel-title>Appearance options</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<mat-radio-group [(ngModel)]="options.theme" [ngModelOptions]="{standalone: true}">
+				<label>Theme:</label>
+				<mat-radio-button [value]="null">Follow system setting</mat-radio-button>
+				<mat-radio-button value="light">Light</mat-radio-button>
+				<mat-radio-button value="dark">Dark</mat-radio-button>
+			</mat-radio-group>
+		</mat-expansion-panel>
+
+		<mat-expansion-panel expanded togglePosition="before">
+			<mat-expansion-panel-header>
+				<mat-panel-title>Notification options</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<mat-checkbox [(ngModel)]="options.notification" [ngModelOptions]="{standalone: true}">Show notification on new items</mat-checkbox>
+			<mat-checkbox [(ngModel)]="options.notifyOnFeedError" [ngModelOptions]="{standalone: true}">Show notification on feed update error</mat-checkbox>
+
+			<mat-radio-group [(ngModel)]="options.customNotificationIcons" [ngModelOptions]="{standalone: true}">
+				<label>When we display a notification for a single feed:</label>
+				<mat-radio-button [value]="false">Use the One Number extension icon</mat-radio-button>
+				<mat-radio-button [value]="true">Use the specific feed icon</mat-radio-button>
+			</mat-radio-group>
+		</mat-expansion-panel>
+
+		<mat-expansion-panel expanded togglePosition="before">
+			<mat-expansion-panel-header>
+				<mat-panel-title>Feed item display options</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<mat-checkbox [(ngModel)]="options.showImages" [ngModelOptions]="{standalone: true}">Show images inline</mat-checkbox>
+			<mat-checkbox [(ngModel)]="options.showAudioVideo" [ngModelOptions]="{standalone: true}">Show audio and video inline</mat-checkbox>
+		</mat-expansion-panel>
+		
+		<mat-expansion-panel expanded togglePosition="before">
+			<mat-expansion-panel-header>
+				<mat-panel-title>Default feed update options</mat-panel-title>
+			</mat-expansion-panel-header>
+
+			<mat-form-field>
+				<mat-label>Refresh interval</mat-label>
+				<input matInput type="number" required [(ngModel)]="options.queryInterval" [ngModelOptions]="{standalone: true}" />
+				<span matSuffix>minutes</span>
+			</mat-form-field>
+		
+			<mat-form-field>
+				<mat-label>Purge old read unstarred items after</mat-label>
+				<input matInput type="number" required [(ngModel)]="options.purgeAfter" [ngModelOptions]="{standalone: true}" />
+				<span matSuffix>days</span>
+			</mat-form-field>
+		</mat-expansion-panel>
+	</mat-accordion>
+	<p>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity()" (click)="submit()">Save</button>
+	</p>
+</form>

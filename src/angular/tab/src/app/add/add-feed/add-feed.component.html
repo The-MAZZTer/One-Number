@@ -1,0 +1,11 @@
+<h1>{{caption}}</h1>
+<h3>Enter the following information and then click Add:</h3>
+
+<form #form>
+	<app-feed-properties #properties [feed]="feed"></app-feed-properties>
+	<p>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="showPreview(preview)">Preview</button>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="submit(preview)">Add</button>
+	</p>
+	<app-feed-preview #preview [feed]="feed"></app-feed-preview>
+</form>

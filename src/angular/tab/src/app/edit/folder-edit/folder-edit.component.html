@@ -1,0 +1,11 @@
+<h1>{{caption}}</h1>
+<h3>Enter the desired name and then click Save:</h3>
+
+<form #form>
+	<app-folder-properties #properties></app-folder-properties>
+	<p>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity()" (click)="submit()">Save</button>
+		<span class="spacer"></span>
+		<button mat-raised-button color="warn" (click)="askDelete()">Delete</button>
+	</p>
+</form>

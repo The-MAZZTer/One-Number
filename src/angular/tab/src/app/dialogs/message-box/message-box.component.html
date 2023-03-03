@@ -1,0 +1,8 @@
+<h1 *ngIf="data.title" mat-dialog-title>{{data.title}}</h1>
+<mat-icon *ngIf="data.glyph">{{data.glyph}}</mat-icon>
+<div mat-dialog-content *ngIf="data.content">
+  <p>{{data.content}}</p>
+</div>
+<div mat-dialog-actions>
+	<button *ngFor="let button of data.buttons" mat-raised-button [color]="button.color" [mat-dialog-close]="button.value" [attr.cdkFocusInitial]="button.value === data.defaultValue">{{button.text}}</button>
+</div>

@@ -1,0 +1,503 @@
+import { Enumerable } from "linq";
+import { FolderSchema, FeedSchema, FeedItemSchema } from "../models/db";
+import { DbContext } from "./dbContext";
+
+export class All {
+	private db: DbContext;
+	private async openDb(): Promise<DbContext> {
+		if (!this.db) {
+			this.db = new DbContext();
+			await this.db.open();
+		}
+		return this.db;
+	}
+
+	public refreshFolderChildren() {
+		this.folderChildren = null;
+	}
+	private folderChildren: Folder[];
+	public async getFolderChildren(): Promise<Folder[]> {
+		if (this.folderChildren == null) {
+			let db = await this.openDb();
+			this.folderChildren = Enumerable.fromArray(await db.getRootFolders())
+				.select((x: FolderSchema) => new Folder(x))
+				.toArray();
+		}
+		return this.folderChildren;
+	}
+
+	public refreshFeedChildren() {
+		this.feedChildren = null;
+	}
+	private feedChildren: Feed<FeedSchema>[];
+	public async getFeedChildren(): Promise<Feed<FeedSchema>[]> {
+		if (this.feedChildren == null) {
+			let db = await this.openDb();
+			this.feedChildren = Enumerable.fromArray(await db.getRootFeeds())
+				.select((x: FeedSchema) => Feed.fromFeedSchema(x))
+				.toArray();
+		}
+		return this.feedChildren;
+	}
+
+	public refreshFeedItems() {
+		this.feedItems = null;
+	}
+	private feedItems: FeedItem[];
+	public async getFeedItems(): Promise<FeedItem[]> {
+		if (this.feedItems == null) {
+			let db = await this.openDb();
+			this.feedItems = Enumerable.fromArray(await db.getFeedItems())
+				.select((x: FeedItemSchema) => FeedItem.fromFeedItemSchema(x))
+				.toArray();
+		}
+		return this.feedItems;
+	}
+
+	public dispose() {
+		this.db?.close();
+		this.db = null;
+	}
+};
+
+export abstract class Feed<T extends FeedSchema> {
+	public static registerType<T extends FeedSchema>(type: new(feed?: T) => Feed<T>) {
+		Feed.types[type.name] = type;
+	}
+	private static types: Record<string, new(feed?: any) => Feed<FeedSchema>> = {};
+
+	public static fromFeedSchema<T extends FeedSchema>(feed: T): Feed<T> {
+		let ctor = Feed.types[feed.type];
+		return new ctor(feed) as Feed<T>;
+	}
+
+	protected constructor(protected feed?: T) {
+		if (this.feed == null){
+			this.feed = {
+				type: this.constructor.name,
+				parentFolderId: 0,
+				name: null,
+				overrideName: null,
+				queryInterval: 0,
+				description: null,
+				icon: null,
+				lastUpdated: null,
+				lastRefresh: null,
+				lastError: null
+			} as T;
+		}
+		this.feed.type = this.constructor.name;
+	}
+
+	private db: DbContext;
+	private async openDb(): Promise<DbContext> {
+		if (!this.db) {
+			this.db = new DbContext();
+			await this.db.open();
+		}
+		return this.db;
+	}
+
+	public async refresh(): Promise<void> {
+		if (!this.feed.id) {
+			return;
+		}
+
+		let db = await this.openDb();
+		this.feed = await db.getFeed(this.feed.id) as T;
+
+		if (this.folder?.id ?? 0 != this.feed.parentFolderId) {
+			this.folder = null;
+		}
+	}
+
+	public async save() {
+		let db = await this.openDb();
+		if (this.feed.id) {
+			db.updateFeed(this.feed);
+		} else {
+			db.addFeed(this.feed);
+		}
+	}
+
+	public abstract fetch(): Promise<void>;
+
+	public get id(): number {
+		return this.feed.id;
+	}
+
+	public get overrideName(): string {
+		return this.feed.overrideName;
+	}
+	public set overrideName(value: string) {
+		this.feed.overrideName = value;
+	}
+	public get displayName(): string {
+		return this.feed.overrideName ?? this.feed.name;
+	}
+
+	public get name(): string {
+		return this.feed.name;
+	}
+	public get description(): string {
+		return this.feed.description;
+	}
+
+	public get queryInterval(): number {
+		return this.feed.queryInterval;
+	}
+	public set queryInterval(value: number) {
+		this.feed.queryInterval = value;
+	}
+
+	protected async fetchIcon(url: URL): Promise<URL> {
+		try {
+			let response = await fetch(url.href);
+			if (!response.ok) {
+				return null;
+			}
+	
+			let contentType = response.headers.get("Content-Type");
+			if (contentType && !contentType.startsWith("image/")) {
+				return null;
+			}
+			
+			let blob = await response.blob();
+			return new URL(await new Promise<string>((resolve, reject) => {
+				let reader = new FileReader();
+				reader.onload = e => {
+					resolve(e.target.result as string);
+				};
+				reader.onerror = e => {
+					reject(e.target.error);
+				};
+				reader.readAsDataURL(blob);
+			}));		
+		} catch {
+			return null;
+		}
+	}
+
+	public getIcon(): URL {
+		return new URL(this.feed.icon);
+	}
+	protected async setIcon(value: URL) {
+		if (value && value.protocol != "data:") {
+			value = await this.fetchIcon(value) ?? null;
+		}
+		this.feed.icon = value?.href;
+	}
+
+	private folder: Folder;
+	public async getParent(): Promise<Folder> {
+		if (this.folder == null) {
+			if (!this.feed.parentFolderId) {
+				return null;
+			}
+	
+			let db = await this.openDb();
+			this.folder = new Folder(await db.getFolder(this.feed.parentFolderId));
+		}
+
+		return this.folder;
+	}
+	public setParent(parent: Folder) {
+		if (this.folder == parent) {
+			return;
+		}
+
+		this.folder?.refreshFeedChildren();
+		this.folder = parent;
+		this.feed.parentFolderId = parent?.id ?? 0;
+		this.folder?.refreshFeedChildren();
+	}
+
+	public refreshFeedItems() {
+		this.feedItems = null;
+	}
+	private feedItems: FeedItem[];
+	public async getFeedItems(): Promise<FeedItem[]> {
+		if (this.feedItems == null) {
+			if (!this.feed.id) {
+				this.feedItems = [];
+			} else {
+				let db = await this.openDb();
+				this.feedItems = Enumerable.fromArray(await db.getItemsFromFeed(this.feed))
+					.select((x: FeedItemSchema) => FeedItem.fromFeedItemSchema(x))
+					.toArray();
+			}
+		}
+		return this.feedItems;
+	}
+
+	public dispose() {
+		this.db?.close();
+		this.db = null;
+	}
+}
+
+export class Folder {
+	public constructor(private folder?: FolderSchema) {
+		if (this.folder == null) {
+			this.folder = {
+				parentFolderId: 0,
+				name: null
+			};
+		}
+	}
+
+	private db: DbContext;
+	private async openDb(): Promise<DbContext> {
+		if (!this.db) {
+			this.db = new DbContext();
+			await this.db.open();
+		}
+		return this.db;
+	}
+
+	public async refresh(): Promise<void> {
+		if (!this.folder.id) {
+			return;
+		}
+
+		let db = await this.openDb();
+		this.folder = await db.getFolder(this.folder.id);
+
+		if (this.parent?.id ?? 0 != this.folder.parentFolderId) {
+			this.parent = null;
+		}
+	}
+
+	public async save() {
+		let db = await this.openDb();
+		if (this.folder.id) {
+			db.updateFolder(this.folder);
+		} else {
+			db.addFolder(this.folder);
+		}
+	}
+
+	public get id(): number {
+		return this.folder.id;
+	}
+
+	public get name(): string {
+		return this.folder.name;
+	}
+	public set name(value: string) {
+		this.folder.name = value;
+	}
+
+	private parent: Folder;
+	public async getParent(): Promise<Folder> {
+		if (this.parent == null) {
+			if (!this.folder.parentFolderId) {
+				return null;
+			}
+	
+			let db = await this.openDb();
+			this.parent = new Folder(await db.getFolder(this.folder.parentFolderId));
+		}
+
+		return this.parent;
+	}
+	public setParent(parent: Folder) {
+		if (this.parent == parent) {
+			return;
+		}
+
+		this.parent?.refreshFolderChildren();
+		this.parent = parent;
+		this.folder.parentFolderId = parent?.id ?? 0;
+		this.parent?.refreshFolderChildren();
+	}
+
+	public refreshFolderChildren() {
+		this.folderChildren = null;
+	}
+	private folderChildren: Folder[];
+	public async getFolderChildren(): Promise<Folder[]> {
+		if (this.folderChildren == null) {
+			if (!this.folder.id) {
+				this.folderChildren = [];
+			} else {
+				let db = await this.openDb();
+				this.folderChildren = Enumerable.fromArray(await db.getChildFolders(this.folder))
+					.select((x: FolderSchema) => new Folder(x))
+					.toArray();
+			}
+		}
+		return this.folderChildren;
+	}
+
+	public refreshFeedChildren() {
+		this.feedChildren = null;
+	}
+	private feedChildren: Feed<FeedSchema>[];
+	public async getFeedChildren(): Promise<Feed<FeedSchema>[]> {
+		if (this.feedChildren == null) {
+			if (!this.folder.id) {
+				this.feedChildren = [];
+			} else {
+				let db = await this.openDb();
+				this.feedChildren = Enumerable.fromArray(await db.getFeeds(this.folder))
+					.select((x: FeedSchema) => Feed.fromFeedSchema(x))
+					.toArray();
+			}
+		}
+		return this.feedChildren;
+	}
+
+	public refreshFeedItems() {
+		this.feedItems = null;
+	}
+	private feedItems: FeedItem[];
+	public async getFeedItems(): Promise<FeedItem[]> {
+		if (this.feedItems == null) {
+			if (!this.folder.id) {
+				this.feedItems = [];
+			} else {
+				let db = await this.openDb();
+				this.feedItems = Enumerable.fromArray(await db.getItemsFromFolder(this.folder))
+					.select((x: FeedItemSchema) => FeedItem.fromFeedItemSchema(x))
+					.toArray();
+			}
+		}
+		return this.feedItems;
+	}
+
+	public dispose() {
+		this.db?.close();
+		this.db = null;
+	}
+}
+
+export abstract class FeedItem {
+	public static registerType(type: new(feed: FeedItemSchema) => FeedItem) {
+		FeedItem.types[type.name] = type;
+	}
+	private static types: Record<string, new(feed: FeedItemSchema) => FeedItem> = {};
+
+	public static fromFeedItemSchema(feedItem: FeedItemSchema): FeedItem {
+		let ctor = FeedItem.types[feedItem.type];
+		return new ctor(feedItem);
+	}
+
+	protected constructor(protected feedItem?: FeedItemSchema) {
+		if (this.feedItem == null){
+			this.feedItem = {
+				feedId: 0,
+				type: this.constructor.name,
+				guid: null,
+				name: null,
+				url: null,
+				published: null,
+				author: null,
+				content: null,
+
+				read: null,
+				star: false
+			};
+		}
+		this.feedItem.type = this.constructor.name;
+	}
+
+	private db: DbContext;
+	private async openDb(): Promise<DbContext> {
+		if (!this.db) {
+			this.db = new DbContext();
+			await this.db.open();
+		}
+		return this.db;
+	}
+
+	public async refresh(): Promise<void> {
+		if (!this.feedItem.id) {
+			return;
+		}
+
+		let db = await this.openDb();
+		this.feedItem = await db.getFeedItem(this.feedItem.id);
+
+		if (this.feed?.id ?? 0 != this.feedItem.feedId) {
+			this.feed = null;
+		}
+	}
+
+	public async save() {
+		let db = await this.openDb();
+		if (this.feedItem.id) {
+			db.updateFeedItem(this.feedItem);
+		} else {
+			db.addFeedItem(this.feedItem);
+		}
+	}
+
+	public get id(): number {
+		return this.feedItem.id;
+	}
+	public get guid(): string {
+		return this.feedItem.guid;
+	}
+	public get name(): string {
+		return this.feedItem.name;
+	}
+	public get url(): string {
+		return this.feedItem.url;
+	}
+	public get published(): Date {
+		return this.feedItem.published;
+	}
+	public get author(): string {
+		return this.feedItem.author;
+	}
+	public get content(): string {
+		return this.feedItem.content;
+	}
+
+	public get read(): Date {
+		return this.feedItem.read;
+	}
+	public setUnread() {
+		this.feedItem.read = null;
+	}
+	public setRead() {
+		this.feedItem.read = new Date();
+	}
+
+	public get star(): boolean {
+		return this.feedItem.star;
+	}
+	public set star(value: boolean) {
+		this.feedItem.star = value;
+	}
+
+	private feed: Feed<FeedSchema>;
+	public async getParent(): Promise<Feed<FeedSchema>> {
+		if (this.feed == null) {
+			if (!this.feedItem.feedId) {
+				return null;
+			}
+	
+			let db = await this.openDb();
+			this.feed = Feed.fromFeedSchema(await db.getFeed(this.feedItem.feedId));
+		}
+
+		return this.feed;
+	}
+	public setParent(parent: Feed<FeedSchema>) {
+		if (this.feed == parent) {
+			return;
+		}
+
+		this.feed?.refreshFeedItems();
+		this.feed = parent;
+		this.feedItem.feedId = parent?.id ?? 0;
+		this.feed?.refreshFeedItems();
+	}
+
+	public dispose() {
+		this.db?.close();
+		this.db = null;
+	}
+}

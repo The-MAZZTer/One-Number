@@ -1,0 +1,29 @@
+<mat-toolbar color="primary">
+	<button mat-icon-button class="example-icon" aria-label="Toggle feed list" (click)="feedDrawer.toggle()">
+		<mat-icon [matBadgeHidden]="feedDrawer.opened" [matBadge]="feedList.totalUnread"
+			[matBadgeColor]="feedList.totalErrors ? 'warn' : 'accent'"
+			[matTooltipDisabled]="feedDrawer.opened || !feedList.totalErrors" [matTooltip]="feedList.totalErrors || ''">menu</mat-icon>
+	</button>
+	<span class="title">One Number</span>  
+
+	<app-search-bar #search></app-search-bar>
+</mat-toolbar>
+<mat-sidenav-container>
+	<mat-sidenav #feedDrawer mode="side" opened (openedChange)="drawerOpened($event)">
+		<app-feed-list #feedList></app-feed-list>
+		
+		<mat-nav-list>
+			<button mat-button mat-list-item (click)="toggleEditMode()">
+				<mat-icon aria-hidden="true">
+					<ng-container *ngIf="!editMode">create</ng-container>
+					<ng-container *ngIf="editMode">arrow_back</ng-container>
+				</mat-icon>
+				<ng-container *ngIf="!editMode">Edit / Options</ng-container>
+				<ng-container *ngIf="editMode">Back</ng-container>
+			</button>
+	 </mat-nav-list>
+	</mat-sidenav>
+	<mat-sidenav-content>
+		<router-outlet></router-outlet>
+	</mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,117 @@
+
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat.core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+
+$light-primary: mat.define-palette(mat.$deep-purple-palette);
+$light-accent: mat.define-palette(mat.$indigo-palette);
+
+$dark-primary: mat.define-palette(mat.$deep-purple-palette);
+$dark-accent: mat.define-palette(mat.$indigo-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$light-theme: mat.define-light-theme((
+  color: (
+    primary: $light-primary,
+    accent: $light-accent,
+  )
+));
+
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: $dark-primary,
+    accent: $dark-accent
+  )
+));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-component-themes($light-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+a:not(.stealth)[href] {
+  color: mat.get-color-from-palette($light-accent);
+}
+
+a:not(.stealth):visited[href] {
+  color: mat.get-color-from-palette($light-accent, 900);
+}
+
+a.stealth[href], a.stealth:visited[href], a.stealth:active[href] {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.color-primary {
+  color: mat.get-color-from-palette($light-primary) !important;
+}
+.color-accent {
+  color: mat.get-color-from-palette($light-accent) !important;
+}
+.border-color-primary {
+  border-color: mat.get-color-from-palette($light-primary) !important;
+}
+.border-color-accent {
+  border-color: mat.get-color-from-palette($light-accent) !important;
+}
+.border-left-color-primary {
+  border-left-color: mat.get-color-from-palette($light-primary) !important;
+}
+.border-left-color-accent {
+  border-left-color: mat.get-color-from-palette($light-accent) !important;
+}
+
+html.dark {
+  @include mat.all-component-colors($dark-theme);
+
+  a:not(.stealth)[href] {
+    color: mat.get-color-from-palette($dark-accent);
+  }  
+
+  a:not(.stealth):visited[href] {
+    color: mat.get-color-from-palette($dark-accent, 100);
+  }
+
+  a.stealth[href], a.stealth:visited[href], a.stealth:active[href] {
+    color: white;
+  }
+  
+  .color-primary {
+    color: mat.get-color-from-palette($dark-primary) !important;
+  }
+  .color-accent {
+    color: mat.get-color-from-palette($dark-accent) !important;
+  }
+  .border-color-primary {
+    border-color: mat.get-color-from-palette($dark-primary) !important;
+  }
+  .border-color-accent {
+    border-color: mat.get-color-from-palette($dark-accent) !important;
+  }
+  .border-left-color-primary {
+    border-left-color: mat.get-color-from-palette($dark-primary) !important;
+  }
+  .border-left-color-accent {
+    border-left-color: mat.get-color-from-palette($dark-accent) !important;
+  }
+}
+
+html, body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

@@ -1,0 +1,171 @@
+import * as db from "idb/with-async-ittr";
+import { Database, FolderSchema, FeedSchema, FeedItemSchema } from "../models/db";
+
+export class DbContext {
+	private db: db.IDBPDatabase<Database>;
+	public async open() {
+		this.db = await db.openDB<Database>('database', 1, {
+			upgrade: db => {
+				let folders = db.createObjectStore("folders", {
+					keyPath: "id",
+					autoIncrement: true
+				});
+				folders.createIndex("folderList", "parentFolderId", {
+					unique: false
+				});
+	
+				let feeds = db.createObjectStore("feeds", {
+					keyPath: "id",
+					autoIncrement: true
+				});
+				feeds.createIndex("folderList", "parentFolderId", {
+					unique: false
+				});
+
+				let feedItems = db.createObjectStore("feedItems", {
+					keyPath: "id",
+					autoIncrement: true
+				});
+				feedItems.createIndex("guid", ["feedId", "guid"], {
+					unique: true
+				});
+				feedItems.createIndex("specificFeed", "feedId", {
+					unique: false
+				});
+			},
+		});
+	}
+
+	public close() {
+		this.db.close();
+	}
+
+	public getFolder(id: number): Promise<FolderSchema> {
+		return this.db.get("folders", id);
+	}
+
+	public async getChildFolders(parent: FolderSchema): Promise<FolderSchema[]> {
+		return await this.db.getAllFromIndex("folders", "folderList", parent.id);
+	}
+
+	public async getRootFolders(): Promise<FolderSchema[]> {
+		return await this.db.getAllFromIndex("folders", "folderList", 0);
+	}
+
+	public async addFolder(folder: FolderSchema) {
+		folder.id = await this.db.add("folders", folder);
+	}
+
+	public async updateFolder(folder: FolderSchema) {
+		await this.db.put("folders", folder);
+	}
+
+	private async txDeleteFolder(folder: FolderSchema, tx: db.IDBPTransaction<Database, ("folders" | "feeds" | "feedItems")[], "readwrite">) {
+		let folderStore = tx.objectStore("folders");
+		let feedStore = tx.objectStore("feeds");
+
+		for await (let feed of feedStore.index("folderList").iterate(folder.id)) {
+			await this.txDeleteFeed(feed.value, tx);
+		}
+
+		for await (let child of folderStore.index("folderList").iterate(folder.id)) {
+			await this.txDeleteFolder(child.value, tx);
+		}
+
+		await folderStore.delete(folder.id);
+	}
+
+	public async deleteFolder(folder: FolderSchema) {
+		let tx = this.db.transaction(["folders", "feeds", "feedItems"], "readwrite");
+		await this.txDeleteFolder(folder, tx);
+		await tx.done;
+	}
+
+	public getFeed(id: number): Promise<FeedSchema> {
+		return this.db.get("feeds", id);
+	}
+
+	public async getRootFeeds(): Promise<FeedSchema[]> {
+ 		return await this.db.getAllFromIndex("feeds", "folderList", 0);
+	}
+
+	public async getFeeds(folder: FolderSchema): Promise<FeedSchema[]> {
+		return await this.db.getAllFromIndex("feeds", "folderList", folder.id);
+	}
+
+	public async addFeed(feed: FeedSchema) {
+		feed.id = await this.db.add("feeds", feed);
+	}
+
+	public async updateFeed(feed: FeedSchema) {
+		await this.db.put("feeds", feed);
+	}
+
+	private async txDeleteFeed(feed: FeedSchema, tx: db.IDBPTransaction<Database, ("folders" | "feeds" | "feedItems")[], "readwrite">) {
+		let feedStore = tx.objectStore("feeds");
+		let feedItemStore = tx.objectStore("feedItems");
+
+		for await (let child of feedItemStore.index("specificFeed").iterate(feed.id)) {
+			await this.txDeleteFeedItem(child.value, tx);
+		}
+
+		await feedStore.delete(feed.id);
+	}
+
+	public async deleteFeed(feed: FeedSchema) {
+		let tx = this.db.transaction(["feeds", "feedItems"], "readwrite");
+		await this.txDeleteFeed(feed, tx);
+		await tx.done;
+	}
+
+	public getFeedItem(id: number): Promise<FeedItemSchema> {
+		return this.db.get("feedItems", id);
+	}
+
+	public async getItemsFromFeed(feed: FeedSchema): Promise<FeedItemSchema[]> {
+		return await this.db.getAllFromIndex("feedItems", "specificFeed", feed.id);
+	}
+
+	public async getItemsFromFolder(folder: FolderSchema): Promise<FeedItemSchema[]> {
+		let folders = [folder];
+		let count = 0;
+		while (folders.length != count) {
+			count = folders.length;
+			folders.push.apply(folders, await this.getChildFolders(folder));
+		}
+
+		let feeds: FeedSchema[] = [];
+		for (let folder of folders) {
+			feeds.push.apply(feeds, await this.getFeeds(folder));
+		}
+		
+		let feedItems: FeedItemSchema[] = [];
+		for (let feed of feeds) {
+			feedItems.push.apply(feedItems, await this.db.getAllFromIndex("feedItems", "specificFeed", feed.id));
+		}
+		return feedItems;
+	}
+
+	public getFeedItems(): Promise<FeedItemSchema[]> {
+		return this.db.getAll("feedItems");
+	}
+
+	public async addFeedItem(feedItem: FeedItemSchema) {
+		feedItem.id = await this.db.add("feedItems", feedItem);
+	}
+
+	public async updateFeedItem(feedItem: FeedItemSchema) {
+		await this.db.put("feedItems", feedItem);
+	}
+
+	private async txDeleteFeedItem(feedItem: FeedItemSchema, tx: db.IDBPTransaction<Database, ("folders" | "feeds" | "feedItems")[], "readwrite">) {
+		let feedItemStore = tx.objectStore("feedItems");
+		await feedItemStore.delete(feedItem.id);
+	}
+
+	public async deleteFeedItem(feedItem: FeedItemSchema) {
+		let tx = this.db.transaction(["feedItems"], "readwrite");
+		await this.txDeleteFeedItem(feedItem, tx);
+		await tx.done;
+	}
+}

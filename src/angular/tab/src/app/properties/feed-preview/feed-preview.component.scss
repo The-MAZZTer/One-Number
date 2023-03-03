@@ -1,0 +1,9 @@
+:host {
+	> mat-card {
+		> mat-card-header {
+			> [mat-card-avatar] {
+				background-size: cover;
+			}
+		}
+	}
+}

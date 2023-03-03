@@ -1,0 +1,126 @@
+<header>
+	<span class="spacer"></span>
+
+	<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Options">
+		<mat-icon>more_vert</mat-icon>
+	</button>
+	<mat-menu #menu="matMenu">
+		<button mat-menu-item (click)="setSortDescending(true)">
+			<mat-icon [innerText]="sortDescending ? 'radio_button_checked' : 'radio_button_unchecked'"></mat-icon> Show newest first
+		</button>
+
+		<button mat-menu-item (click)="setSortDescending(false)">
+			<mat-icon [innerText]="sortDescending ? 'radio_button_unchecked' : 'radio_button_checked'"></mat-icon> Show oldest first
+		</button>
+
+		<mat-divider></mat-divider>
+
+		<button mat-menu-item *ngIf="canShowReadToggle" (click)="setShowRead(!showRead)">
+			<mat-icon [innerText]="showRead ? 'check_box' : 'check_box_outline_blank'"></mat-icon> Show read items
+		</button>
+
+		<button mat-menu-item (click)="markAllRead()">
+			<mat-icon>mark_email_read</mat-icon> Mark all read
+		</button>
+
+		<mat-divider></mat-divider>
+
+		<button mat-menu-item (click)="setOpenToSide(false)">
+			<mat-icon [innerText]="openToSide ? 'radio_button_unchecked' : 'radio_button_checked'"></mat-icon> Open items inline
+		</button>
+
+		<button mat-menu-item (click)="setOpenToSide(true)">
+			<mat-icon [innerText]="openToSide ? 'radio_button_checked' : 'radio_button_unchecked'"></mat-icon> Open items to side
+		</button>
+
+		<mat-divider></mat-divider>
+
+		<button mat-menu-item (click)="setPopupViewToCurrent()">
+			<mat-icon [innerText]="popupViewIsCurrent ? 'check_box' : 'check_box_outline_blank'"></mat-icon> Show this view in popup
+		</button>
+	</mat-menu>
+</header>
+<section #section>
+	<main #main [class.openToSide]="openToSide && selectedItem">
+		<mat-accordion #accordion="matAccordion">
+			<mat-expansion-panel *ngFor="let x of items" #panel
+				[hideToggle]="openToSide" togglePosition="before"
+				[ngClass]="['feedType_' + feedType(x), x.read.valueOf() ? 'feedItemRead_read' : 'feedItemRead_unread']"
+				[class.selected]="x === selectedItem"
+				(opened)="panelOpened(x, panel)">
+	
+				<mat-expansion-panel-header
+					[class.border-left-color-accent]="!x.read.valueOf()">
+
+					<mat-panel-title>
+						<span class="title">
+							<mat-icon *ngIf="feedIcon(x) === null" class="icon" >rss_feed</mat-icon>
+							<img *ngIf="feedIcon(x) !== null" class="icon" aria-hidden="true" [src]="feedIcon(x)" draggable="false" />
+							<a *ngIf="x.url" ngClass="stealth itemTitle" [href]="x.url" target="_blank" (click)="linkClick(panel, x.id, $event)" (auxclick)="linkClick(panel, x.id, $event)">{{x.name}}</a>
+							<span *ngIf="!x.url" ngClass="itemTitle">{{x.name}}</span>
+							<span class="feedTitle">{{feedName(x)}}</span>
+						</span>
+						<span class="date" [matTooltip]="x.published.toString()" matTooltipPosition="before">{{friendlyDate(x)}}</span>
+						<button mat-icon-button class="read" (click)="toggleRead(x, $event)" [matTooltip]="x.read.valueOf() > 0 ? 'Mark unread' : 'Mark read'">
+							<mat-icon [innerText]="x.read.valueOf() > 0 ? 'drafts' : 'markunread'"></mat-icon>
+						</button>
+						<button mat-icon-button class="star" (click)="toggleStar(x, $event)" [matTooltip]="x.star ? 'Remove from starred' : 'Add to starred'">
+							<mat-icon [innerText]="x.star ? 'star' : 'star_outline'"></mat-icon>
+						</button>
+					</mat-panel-title>
+				</mat-expansion-panel-header>
+				
+				<ng-template matExpansionPanelContent>
+					<mat-card>
+						<mat-card-header>
+							<mat-card-title>
+								<a *ngIf="x.url" ngClass="stealth" [href]="x.url" target="_blank">{{x.name}}</a>
+								<span *ngIf="!x.url">{{x.name}}</span>
+							</mat-card-title>
+							<mat-card-subtitle>
+								<mat-icon *ngIf="feedIcon(x) === null" class="icon" >rss_feed</mat-icon>
+								<img *ngIf="feedIcon(x) !== null" class="icon" aria-hidden="true" [src]="feedIcon(x)" draggable="false" />
+								<a ngClass="stealth" [routerLink]="['/feed', x.feedId]">{{feedName(x)}}</a>
+								<span *ngIf="x.author" class="author"> by {{x.author}}</span>
+								<span [matTooltip]="x.published.toString()" matTooltipPosition="after"> {{friendlyDate(x)}} ago</span>
+							</mat-card-subtitle>
+						</mat-card-header>
+						<ng-container *ngIf="mediaIsType(x, 'image')">
+							<img mat-card-image [src]="mediaSrc(x)" />
+						</ng-container>
+						<ng-container *ngIf="mediaIsType(x, 'audio')">
+							<audio controls preload="metadata" [src]="mediaSrc(x)"></audio>
+						</ng-container>
+						<ng-container *ngIf="mediaIsType(x, 'video')">
+							<video ontrols preload="metadata" [src]="mediaSrc(x)"></video>
+						</ng-container>
+						<mat-card-content></mat-card-content>
+					</mat-card>
+					<mat-action-row *ngIf="x.url">
+						<button mat-raised-button color="primary" (click)="openNewTab(x)">Open in new tab</button>
+					</mat-action-row>
+				</ng-template>
+			</mat-expansion-panel>
+		</mat-accordion>
+
+		<footer *ngIf="searchWithNoQuery">
+			<mat-icon>search</mat-icon>
+			<p>Enter a search query above to begin.</p>
+		</footer>
+
+		<footer *ngIf="!searchWithNoQuery && !totalItems">
+			<mat-icon>inbox</mat-icon>
+			<p>Nothing to see here!</p>
+		</footer>
+
+		<footer *ngIf="totalItems > 0">
+			<mat-icon>inbox</mat-icon>
+			<p>Nothing more to see here!</p>
+		</footer>
+
+		<mat-spinner #spinner *ngIf="totalItems &lt; 0"></mat-spinner>
+	</main>
+
+	<aside *ngIf="openToSide && selectedItem" #aside [class.noFrame]="!selectedItem.url">
+	</aside>
+</section>

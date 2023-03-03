@@ -1,0 +1,9 @@
+<mat-spinner *ngIf="loading"></mat-spinner>
+<mat-card *ngIf="show">
+  <mat-card-header>
+		<div *ngIf="icon" mat-card-avatar [ngStyle]="{'background-image': icon }"></div>
+		<mat-card-title *ngIf="feed?.displayName">{{feed?.displayName}}</mat-card-title>
+		<mat-card-subtitle *ngIf="feed?.description">{{feed?.description}}</mat-card-subtitle>
+	</mat-card-header>
+</mat-card>
+<mat-error *ngIf="error !== null">{{error}}</mat-error>

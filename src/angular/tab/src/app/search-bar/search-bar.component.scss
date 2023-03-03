@@ -1,0 +1,18 @@
+:host {
+	mat-form-field {
+		width: 100%;
+
+		::ng-deep .mat-form-field-wrapper {
+			margin: 0;
+			padding: 0;
+
+			.mat-form-field-prefix {
+				top: 0.5em;
+			}
+
+			.mat-form-field-infix {
+				padding: 0.25em 0 0.75em 0.5em;
+			}
+		}
+	}
+}

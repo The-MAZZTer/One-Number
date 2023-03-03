@@ -1,0 +1,1 @@
+declare module "jsstore/dist/jsstore.worker.commonjs2";

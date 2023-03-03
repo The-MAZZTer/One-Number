@@ -1,0 +1,224 @@
+:host {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	header {
+		display: flex;
+		flex-direction: row;
+	
+		> .spacer {
+			flex: 1 0;
+		}
+
+		mat-form-field {
+			width: 100px;
+		}
+	}
+
+	section {
+		flex: 1 1;
+		height: 0;
+
+		display: flex;
+		flex-direction: row;
+
+		main:not(.openToSide) {
+			flex: 1 1;
+			width: 0;
+		}
+		main.openToSide {
+			width: 33%;
+		}
+
+		main {
+			position: relative;
+			overflow-y: auto;
+
+			mat-expansion-panel {
+				> mat-expansion-panel-header {
+					white-space: nowrap;
+		
+					mat-panel-title {
+						margin: 0;
+		
+						display: flex;
+						align-items: normal;
+			
+						button {
+							width: 24px;
+							height: 24px;
+							line-height: 24px;
+							margin: 0 5px;
+						}
+			
+						> .title {
+							width: 0;
+							flex: 1 1 0;
+							overflow: hidden;
+							text-overflow: ellipsis;
+		
+							> .icon {
+								margin-right: 5px;
+								border-radius: 4px;
+							}
+		
+							> .itemTitle {
+								text-decoration: none;
+							}
+							
+							> .feedTitle {
+								opacity: 0.667;
+								margin: 0 0 0 10px;
+							}
+						}
+			
+						> .date {
+							text-align: right;
+							opacity: 0.75;
+							max-width: 100px;
+			
+							margin: 0 5px;
+						}
+					}	
+				}
+				
+				::ng-deep .mat-expansion-panel-body {
+					padding: 0;
+				}
+		
+				.icon {
+					vertical-align: middle;
+					width: 24px;
+					height: 24px;
+					border-radius: 4px;
+				}
+		
+				mat-card {
+					background-color: transparent;
+					border: none;
+					padding: 0;
+					box-shadow: none;
+		
+					mat-card-title {
+						> a {
+							text-decoration: none;
+						}
+
+						> button {
+							width: 24px;
+							height: 24px;
+							line-height: 24px;
+		
+							vertical-align: text-top;
+						}
+					}
+		
+					mat-card-subtitle {
+						> mat-icon {
+							vertical-align: middle;
+						}
+
+						> .icon {
+							margin-right: 5px;
+						}
+
+						> a {
+							text-decoration: none;
+						}
+					}
+
+					video {
+						width: 100%;
+						margin: 0 0 16px;
+					}
+		
+					mat-card-content {
+						padding: 0 16px 16px;
+		
+						::ng-deep img {
+							max-width: 100% !important;
+						}
+					}
+				}
+		
+				mat-action-row {
+					padding-left: 16px;
+					padding-right: 16px;
+				}
+			}
+		
+			mat-expansion-panel.mat-expanded {
+				mat-expansion-panel-header {
+					height: 48px;
+				}
+		
+				mat-panel-title {
+					> .title, > .date {
+						visibility: hidden;
+					}
+				}
+			}
+		
+			mat-expansion-panel.feedItemRead_unread > mat-expansion-panel-header{
+				border-left-style: solid;
+			}
+			
+			mat-expansion-panel.feedItemRead_read > mat-expansion-panel-header {
+				opacity: 0.667;
+			}
+
+			mat-expansion-panel.selected {
+				background-color: #EEE;
+			}
+
+			/*mat-expansion-panel.feedType_GmailFeed mat-card-content > ::ng-deep main {
+				color: black;
+				background-color: white;
+
+				padding: 5px;
+			}*/
+
+			footer {
+				font-size: 20pt;
+				text-align: center;
+				opacity: 67%;
+
+				> mat-icon {
+					display: block;
+					margin: 50px auto 10px;
+
+					font-size: 96px;
+					line-height: 96px;
+					width: 96px;
+					height: 96px;
+				}
+			}
+
+			mat-spinner {
+				margin: 10px auto;
+			}
+		}
+
+		aside {
+			box-sizing: border-box;
+			width: 67%;
+			height: 100%;
+
+			::ng-deep iframe {
+				width: 100%;
+				height: 100%;
+				border: none;
+			}
+		}
+
+		aside.noFrame {
+			padding: 10px;
+			overflow: auto;
+		}
+	}
+}
+
+:host-context(html.dark) section main mat-expansion-panel.selected {
+	background-color: #555;
+}

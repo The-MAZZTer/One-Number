@@ -1,0 +1,64 @@
+<mat-toolbar color="primary">
+	<button mat-icon-button (click)="openTab()" aria-label="Open full interface"
+		matTooltip="Open full interface" matTooltipPosition="after">
+
+		<mat-icon>tab</mat-icon>
+	</button>
+	<span class="title">{{caption}}</span>
+	
+	<span class="spacer"></span>
+
+	<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="View Options">
+		<mat-icon>more_vert</mat-icon>
+	</button>
+	<mat-menu #menu="matMenu">
+		<button mat-menu-item (click)="setSortDescending(true)">
+			<mat-icon [innerText]="sortDescending ? 'radio_button_checked' : 'radio_button_unchecked'"></mat-icon> Show newest first
+		</button>
+
+		<button mat-menu-item (click)="setSortDescending(false)">
+			<mat-icon [innerText]="sortDescending ? 'radio_button_unchecked' : 'radio_button_checked'"></mat-icon> Show oldest first
+		</button>
+
+		<mat-divider></mat-divider>
+
+		<button mat-menu-item (click)="markAllRead()">
+			<mat-icon>mark_email_read</mat-icon> Mark all read
+		</button>
+	</mat-menu>
+</mat-toolbar>
+<section #section>
+	<main #main>
+		<mat-card #cards *ngFor="let x of items"
+			[ngClass]="[x.read.valueOf() ? 'read' : 'unread']"
+			[class.selected]="x === selectedItem">
+
+			<span class="title">
+				<mat-icon *ngIf="feedIcon(x) === null" class="icon" >rss_feed</mat-icon>
+				<img *ngIf="feedIcon(x) !== null" class="icon" aria-hidden="true" [src]="feedIcon(x)" draggable="false" />
+				<a *ngIf="x.url" ngClass="stealth itemTitle" [href]="x.url" target="_blank" (click)="linkClick(x, $event)" (auxclick)="linkClick(x, $event)">{{x.name}}</a>
+				<span *ngIf="!x.url" ngClass="itemTitle">{{x.name}}</span>
+				<span class="feedTitle">{{feedName(x)}}</span>
+			</span>
+			<span class="date" [matTooltip]="x.published.toString()">{{friendlyDate(x)}}</span>
+			<button mat-icon-button class="read" (click)="toggleRead(x, $event)" [matTooltip]="x.read.valueOf() > 0 ? 'Mark unread' : 'Mark read'">
+				<mat-icon [innerText]="x.read.valueOf() > 0 ? 'drafts' : 'markunread'"></mat-icon>
+			</button>
+			<button mat-icon-button class="star" (click)="toggleStar(x, $event)" [matTooltip]="x.star ? 'Remove from starred' : 'Add to starred'">
+				<mat-icon [innerText]="x.star ? 'star' : 'star_outline'"></mat-icon>
+			</button>
+		</mat-card>
+
+		<footer *ngIf="!totalItems">
+			<mat-icon>inbox</mat-icon>
+			<p>Nothing to see here!</p>
+		</footer>
+
+		<footer *ngIf="totalItems > 0">
+			<mat-icon>inbox</mat-icon>
+			<p>Nothing more to see here!</p>
+		</footer>
+
+		<mat-spinner #spinner *ngIf="totalItems &lt; 0"></mat-spinner>
+	</main>
+</section>

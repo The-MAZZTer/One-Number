@@ -1,0 +1,13 @@
+<h1>{{caption}}</h1>
+<h3>Edit the following information and then click Save:</h3>
+
+<form #form>
+	<app-feed-properties #properties [feed]="feed"></app-feed-properties>
+	<p>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="showPreview()">Preview</button>
+		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="submit()">Save</button>
+		<span class="spacer"></span>
+		<button mat-raised-button color="warn" (click)="askDelete()">Delete</button>
+	</p>
+	<app-feed-preview #preview [feed]="feed"></app-feed-preview>
+</form>

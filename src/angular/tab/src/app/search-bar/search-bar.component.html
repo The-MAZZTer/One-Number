@@ -1,0 +1,6 @@
+<mat-form-field appearance="outline">
+  <input matInput placeholder="Search Feeds" [(ngModel)]="query"
+		(input)="onInputInput()" (keydown)="onInputKeyDown($event)" />
+
+	<span matPrefix><mat-icon>search</mat-icon></span>
+</mat-form-field>
