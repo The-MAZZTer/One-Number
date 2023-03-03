@@ -3,4 +3,8 @@
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-/bin
+/bin/options/*
+/bin/popup/*
+/bin/tab/*
+/bin/*.js
+/bin/*.js.map

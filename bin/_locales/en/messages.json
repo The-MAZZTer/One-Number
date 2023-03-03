@@ -1,0 +1,14 @@
+{
+	"name": {
+		"message": "One Number",
+		"description": "Name of the extension that appears on the Extensions page."
+	},
+	"description": {
+		"message": "All your web content, all in one place, one toolbar button, One Number.",
+		"description": "The description that appears on the Extensions page."
+	},
+	"action_default_title": {
+		"message": "One Number",
+		"description": "Default tooltip for the browser action."
+	}
+}
