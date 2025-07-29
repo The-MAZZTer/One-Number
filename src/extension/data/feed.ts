@@ -117,7 +117,6 @@ export class Folder {
 	public constructor(folder?: FolderSchema) {
 		if (!folder) {
 			this.folder = {
-				id: 0,
 				parentId: 0,
 				name: ""
 			};
@@ -160,7 +159,7 @@ export class Folder {
 	}
 
 	public get id(): number {
-		return this.folder.id;
+		return this.folder.id ?? 0;
 	}
 
 	public get name(): string {
@@ -400,7 +399,7 @@ export abstract class Feed<T extends FeedSchema> {
 	}
 
 	public get id(): number {
-		return this.feed.id;
+		return this.feed.id ?? 0;
 	}
 
 	public get overrideName(): string {

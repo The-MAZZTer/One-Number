@@ -445,13 +445,13 @@ export class DbSet<T> {
 }
 
 export type FolderSchema = {
-	id: number,
+	id?: number,
 	parentId: number,
 	name: string | null
 };
 
 export type FeedSchema = {
-	id: number,
+	id?: number,
 	parentId: number,
 	type: string,
 	icon: string | null,

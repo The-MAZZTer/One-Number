@@ -39,7 +39,7 @@ export class AddFeedComponent implements OnInit {
 			}
 			this.title.setTitle(`${this.caption} - One Number`);
 
-			this.feed = new (this.feedType as unknown as new() => Feed<FeedSchema>)();
+			this.feed = new(this.feedType as unknown as new() => Feed<FeedSchema>)();
 			this.properties.feed = this.feed;
 		});
 	}

@@ -96,12 +96,12 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 	private async fullSyncThreads(): Promise<Deltas<FeedItem<FeedItemSchema>>> {
 		const threadList: Thread[] = [];
+		const options: UsersMessagesListParams = {
+			includeSpamTrash: false,
+			labelIds: "INBOX"
+		};
 		let list: UsersThreadsList | null = null;
 		do {
-			const options: UsersMessagesListParams = {
-				includeSpamTrash: false,
-				labelIds: "INBOX"
-			};
 			if (list) {
 				options.pageToken = list.nextPageToken;
 			}
@@ -143,12 +143,12 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 	private async fullSyncMessages(): Promise<Deltas<FeedItem<FeedItemSchema>>> {
 		const messageList: Message[] = [];
+		const options: UsersMessagesListParams = {
+			includeSpamTrash: false,
+			labelIds: "INBOX"
+		};
 		let list: UsersMessagesList | null = null;
 		do {
-			const options: UsersMessagesListParams = {
-				includeSpamTrash: false,
-				labelIds: "INBOX"
-			};
 			if (list) {
 				options.pageToken = list.nextPageToken;
 			}
@@ -213,15 +213,15 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 	}
 
 	private async partialSync(): Promise<Deltas<FeedItem<FeedItemSchema>>> {
+		const options: UsersHistoryListParams = {
+			labelIds: "INBOX",
+			startHistoryId: this.feed.historyId!,
+			historyTypes: [HistoryType.labelAdded, HistoryType.labelRemoved,
+				HistoryType.messageAdded],
+		};
 		let list: UsersHistoryList | null = null;
 		let ids: string[] = [];
 		do {
-			const options: UsersHistoryListParams = {
-				labelIds: "INBOX",
-				startHistoryId: this.feed.historyId!,
-				historyTypes: [HistoryType.labelAdded, HistoryType.labelRemoved,
-					HistoryType.messageAdded],
-			};
 			if (list) {
 				options.pageToken = list.nextPageToken;
 			}
@@ -242,7 +242,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 				for (const history of list.history) {
 					if (history.labelsAdded) {
 						for (const label of history.labelsAdded) {
-							if (label.labelIds.contains("INBOX") || label.labelIds.contains("UNREAD")) {
+							if (label.labelIds.contains("INBOX") /*|| label.labelIds.contains("UNREAD")*/) {
 								if (this.feed.showAsThreads) {
 									ids.push(label.message.threadId);
 								} else {
@@ -290,7 +290,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 					await newItem.import(thread);
 					newItems.push(newItem);
 				}
-			} else{
+			} else {
 				const newMessages = await this.gapi!.gmail.runBatch<Message>(ids.select(x => this.gapi!.gmail.users.messages.prepareGet("me", x, {
 					format: Format.full
 				})).toArray());

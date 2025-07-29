@@ -1,4 +1,4 @@
-<mat-button-toggle-group [value]="currentFeedListItem?.uid" [class.edit]="editMode">
+<mat-button-toggle-group [value]="currentFeedListItem?.uid" [class.edit]="editMode" [hideSingleSelectionIndicator]="true">
   <mat-tree #feedList [dataSource]="feedListDataSource" [treeControl]="feedListTreeControl">
     <!-- cdkDropList (cdkDropListDropped)="feedListDrop($event)"> -->
 
