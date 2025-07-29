@@ -14,7 +14,7 @@
     "sourceMap": true,
     "declaration": false,
     "experimentalDecorators": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2020",
@@ -23,7 +23,9 @@
       "dom"
     ],
     "paths": {
-      "tslib": ["node_modules/tslib"]
+      "tslib": [
+        "node_modules/tslib"
+      ]
     },
     "useDefineForClassFields": false
   },

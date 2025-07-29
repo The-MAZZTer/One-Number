@@ -1,9 +1,21 @@
-<mat-spinner *ngIf="loading"></mat-spinner>
-<mat-card *ngIf="show">
-  <mat-card-header>
-		<div *ngIf="icon" mat-card-avatar [ngStyle]="{'background-image': icon }"></div>
-		<mat-card-title *ngIf="feed?.displayName">{{feed?.displayName}}</mat-card-title>
-		<mat-card-subtitle *ngIf="feed?.description">{{feed?.description}}</mat-card-subtitle>
-	</mat-card-header>
-</mat-card>
-<mat-error *ngIf="error !== null">{{error}}</mat-error>
+@if (loading) {
+  <mat-spinner></mat-spinner>
+}
+@if (show) {
+  <mat-card>
+    <mat-card-header>
+      @if (icon) {
+        <div mat-card-avatar [ngStyle]="{'background-image': icon }"></div>
+      }
+      @if (feed?.displayName) {
+        <mat-card-title>{{feed?.displayName}}</mat-card-title>
+      }
+      @if (feed?.description) {
+        <mat-card-subtitle>{{feed?.description}}</mat-card-subtitle>
+      }
+    </mat-card-header>
+  </mat-card>
+}
+@if (error !== null) {
+  <mat-error>{{error}}</mat-error>
+}

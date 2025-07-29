@@ -1,3 +1,7 @@
-<app-rss-atom-feed-properties #rssAtomFeedProperties *ngIf="feedIsRssAtomFeed" [feed]="$any(feed)"></app-rss-atom-feed-properties>
-<app-gmail-properties #gmailProperties *ngIf="feedIsGmail" [feed]="$any(feed)"></app-gmail-properties>
+@if (feedIsRssAtomFeed) {
+  <app-rss-atom-feed-properties #rssAtomFeedProperties [feed]="$any(feed)"></app-rss-atom-feed-properties>
+}
+@if (feedIsGmail) {
+  <app-gmail-properties #gmailProperties [feed]="$any(feed)"></app-gmail-properties>
+}
 <app-feed-common-properties [feed]="feed"></app-feed-common-properties>

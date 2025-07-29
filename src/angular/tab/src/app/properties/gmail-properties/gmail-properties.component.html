@@ -1,16 +1,22 @@
 <p>
-	<button mat-raised-button color="primary" (click)="auth()" *ngIf="feed && !feed.isAuthed">
-		<mat-icon>security</mat-icon>
-		Grant
-	</button>
-	<ng-container *ngIf="feed && !feed.isAuthed">
-		One Number requires additional permissions.
-	</ng-container>
-	<ng-container *ngIf="feed && feed.isAuthed">
-		One Number has the required access to your Gmail.
-	</ng-container>
+  @if (feed && !feed.isAuthed) {
+    <button mat-raised-button color="primary" (click)="auth()">
+      <mat-icon>security</mat-icon>
+      Grant
+    </button>
+  }
+  @if (feed && !feed.isAuthed) {
+    One Number requires additional permissions.
+  }
+  @if (feed && feed.isAuthed) {
+    One Number has the required access to your Gmail.
+  }
 </p>
 
-<mat-checkbox *ngIf="feed" [(ngModel)]="feed.showAsThreads" [ngModelOptions]="{standalone: true}">Group messages together in conversations</mat-checkbox>
+@if (feed) {
+  <mat-checkbox [(ngModel)]="feed.showAsThreads" [ngModelOptions]="{standalone: true}">Group messages together in conversations</mat-checkbox>
+}
 
-<mat-checkbox *ngIf="feed" [(ngModel)]="feed.syncReadToGmail" [ngModelOptions]="{standalone: true}">Synchronize message read status back to Gmail</mat-checkbox>
+@if (feed) {
+  <mat-checkbox [(ngModel)]="feed.syncReadToGmail" [ngModelOptions]="{standalone: true}">Synchronize message read status back to Gmail</mat-checkbox>
+}

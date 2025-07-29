@@ -1,9 +1,11 @@
 <h1>{{caption}}</h1>
 <h3>Select the desired item to add:</h3>
 
-<button *ngFor="let button of typeButtons" mat-raised-button [routerLink]="button.link">
-	<div>
-		<mat-icon>{{button.glyph}}</mat-icon>
-		<p>{{button.name}}</p>	
-	</div>
-</button>
+@for (button of typeButtons; track button) {
+  <button mat-raised-button [routerLink]="button.link">
+    <div>
+      <mat-icon>{{button.glyph}}</mat-icon>
+      <p>{{button.name}}</p>
+    </div>
+  </button>
+}
