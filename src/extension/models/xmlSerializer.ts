@@ -272,7 +272,7 @@ export class XmlSerializer<T> {
 		} else if (type == Number) {
 			return parseFloat(text);
 		} else if (type == Boolean) {
-			return text?.toLowerCase() == "true" ?? false;
+			return text.toLowerCase() == "true";
 		} else if (type == Date) {
 			return new Date(text);
 		}
