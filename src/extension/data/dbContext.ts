@@ -28,7 +28,7 @@ export class DbContext {
 	public readonly feeds;
 	public readonly feedItems;
 
-	public transaction<T>(query: JsStore.ITranscationQuery): Promise<T> {
+	public transaction<T>(query: JsStore.ITransactionQuery): Promise<T> {
 		if (!DbContext.workerlessDb) {
 			DbContext.workerlessDb = new JsStore.Connection();
 			DbContext.workerlessDb.initDb(dbSchema);

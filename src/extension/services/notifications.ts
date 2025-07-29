@@ -82,7 +82,7 @@ export class Notifications {
 					iconUrl: icon,
 					title: `${feed.name} - One Number`,
 					message: summary,
-					items: feedItems.select<chrome.notifications.ItemOptions>(x => { return {
+					items: feedItems.select<chrome.notifications.NotificationItem>(x => { return {
 						title: x.name,
 						message: x.published.toLocaleString()
 					}}).toArray(),
