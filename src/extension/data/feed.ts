@@ -31,15 +31,11 @@ export class All {
 
 	public async countFeedItems(): Promise<number> {
 		const db = await this.openDb();
-		return await db.feedItems.count({
-			where: {
-				read: new Date(0)
-			}
-		});
+		return await db.getAllFeedItemsCount(false);
 	}
 
 	public async getFeedItems(includeRead: boolean = false, desc: boolean = false, offset: number = 0,
-		limit: number = 1000): Promise<FeedItem<FeedItemSchema>[]> {
+		limit: number = 0): Promise<FeedItem<FeedItemSchema>[]> {
 
 		const db = await this.openDb();
 		return (await db.getAllFeedItems(includeRead, desc, offset, limit))
@@ -49,19 +45,14 @@ export class All {
 
 	public async countStarredFeedItems(): Promise<number> {
 		const db = await this.openDb();
-		return await db.feedItems.count({
-			where: {
-				read: new Date(0),
-				star: 1
-			}
-		});
+		return await db.getStarredFeedItemsCount(false);
 	}
 
 	public async getStarredFeedItems(desc: boolean = false, offset: number = 0, limit: number = 1000):
 		Promise<FeedItem<FeedItemSchema>[]> {
 
 		const db = await this.openDb();
-		return (await db.getStarredFeedItems(desc, offset, limit))
+		return (await db.getStarredFeedItems(true, desc, offset, limit))
 			.select(x => FeedItem.fromFeedItemSchema(x))
 			.toArray();
 	}

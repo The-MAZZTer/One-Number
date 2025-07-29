@@ -20,8 +20,13 @@
 			}
 	
 			li {
-				.mat-icon-button {
+				.mdc-icon-button {
 					width: 20px;
+					padding: 0;
+
+					mat-icon {
+						vertical-align: middle;
+					}
 				}
 				list-style: none;
 	

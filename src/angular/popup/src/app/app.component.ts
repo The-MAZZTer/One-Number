@@ -4,7 +4,7 @@ import { OptionChanges, Options } from "../../../../extension/services/options";
 import { FeedItemSchema, FeedSchema } from "../../../../extension/data/dbContext";
 import { All, Feed, FeedItem, Folder } from "../../../../extension/data/feed";
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from "@angular/material/snack-bar";
-import { MatSpinner } from "@angular/material/progress-spinner";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MessageService } from "../../../tab/src/app/services/messages/message.service";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 
@@ -16,7 +16,7 @@ import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 export class AppComponent implements OnInit {
 	@ViewChild("section", {static: true}) private section!: ElementRef<HTMLElement>;
 	@ViewChild("main", {static: true}) private main!: ElementRef<HTMLElement>;
-	@ViewChild("spinner", {static: false}) private spinner!: MatSpinner;
+	@ViewChild("spinner", {static: false}) private spinner!: MatProgressSpinner;
 	@ViewChildren("cards", { read: ElementRef }) private cards!: QueryList<ElementRef<HTMLElement>>;
 
 	private readonly ITEM_LOAD_COUNT = 10;
@@ -138,6 +138,8 @@ export class AppComponent implements OnInit {
 		}
 
 		await this.loadNextPage();
+		
+		this.onScroll();
 	}
 
 	async ngOnInit(): Promise<void> {
@@ -312,6 +314,7 @@ export class AppComponent implements OnInit {
 				case 1: {
 					await this.setReadState(item, true);
 				} return;
+				default: return;
 			}
 		}
 
@@ -382,7 +385,6 @@ export class AppComponent implements OnInit {
 	}
 
 	async onScroll(): Promise<void> {
-		console.log("!");
 		if (this.loading || !this.spinner) {
 			return;
 		}

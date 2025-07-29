@@ -5,12 +5,9 @@ import { Title } from "@angular/platform-browser";
 import { Router, ActivatedRoute } from "@angular/router";
 import { MessageBoxComponent, MessageBoxData } from "src/app/dialogs/message-box/message-box.component";
 import { FeedPreviewComponent } from "src/app/properties/feed-preview/feed-preview.component";
-import { FeedCommonPropertiesComponent } from "src/app/properties/feed-common-properties/feed-common-properties.component";
-import { RssAtomFeedPropertiesComponent } from "src/app/properties/rss-atom-feed-properties/rss-atom-feed-properties.component";
 import { MessageService } from "src/app/services/messages/message.service";
 import { FeedItemSchema, FeedSchema } from "../../../../../../extension/data/dbContext";
 import { Deltas, Feed, FeedItem } from "../../../../../../extension/data/feed";
-import { RssAtomFeed } from "../../../../../../extension/data/sources/rssatom";
 import { FeedPropertiesComponent } from "src/app/properties/feed-properties/feed-properties.component";
 
 @Component({

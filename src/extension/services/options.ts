@@ -6,7 +6,7 @@ export type OptionChanges = { [key in OptionKeys]: chrome.storage.StorageChange 
 
 type StorageChanges = { [key: string]: chrome.storage.StorageChange };
 
-type StorageCallback = (changes: StorageChanges, areaName: "sync" | "local" | "managed") => void;
+type StorageCallback = (changes: StorageChanges, areaName: "sync" | "local" | "managed" | "session") => void;
 
 export class Options {
 	private constructor() { }

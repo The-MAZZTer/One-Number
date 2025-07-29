@@ -56,7 +56,16 @@ export class DbContext {
 		return this.feedItems.select(query);
 	}
 
-	public getStarredFeedItems(desc: boolean = false, offset: number = 0, limit: number = 0):
+	public getAllFeedItemsCount(includeRead: boolean = false) : Promise<number> {
+		const query: DbSetCountQuery = {};
+		if (!includeRead) {
+			query.where = { read: new Date(0) };
+		}
+
+		return this.feedItems.count(query);
+	}
+
+	public getStarredFeedItems(includeRead: boolean = false, desc: boolean = false, offset: number = 0, limit: number = 0):
 		Promise<FeedItemSchema[]> {
 
 		const query: DbSetSelectQuery = {
@@ -69,11 +78,27 @@ export class DbContext {
 			},
 			skip: offset
 		};
+		if (!includeRead) {
+			query.where!["read"] = new Date(0);
+		}
 		if (limit > 0) {
 			query.limit = limit;
 		}
 
 		return this.feedItems.select(query);
+	}
+
+	public getStarredFeedItemsCount(includeRead: boolean = false) : Promise<number> {
+		const query: DbSetCountQuery = {
+			where: {
+				star: 1
+			}
+		};
+		if (!includeRead) {
+			query.where!["read"] = new Date(0);
+		}
+
+		return this.feedItems.count(query);
 	}
 
 	public async countFolderFeedItems(folder: FolderSchema): Promise<number> {

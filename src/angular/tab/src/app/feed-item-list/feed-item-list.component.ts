@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, HostListener, NgZone, OnDestroy, OnInit, SecurityContext, ViewChild } from "@angular/core";
 import { MatAccordion, MatExpansionPanel, MatExpansionPanelHeader } from "@angular/material/expansion";
-import { MatSpinner } from "@angular/material/progress-spinner";
+import { MatProgressSpinner } from "@angular/material/progress-spinner";
 import { MatSnackBar, MatSnackBarRef, TextOnlySnackBar } from "@angular/material/snack-bar";
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 import { ActivatedRoute } from "@angular/router";
@@ -20,7 +20,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 	@ViewChild("section", {static: true}) private section!: ElementRef<HTMLElement>;
 	@ViewChild("main", {static: true}) private main!: ElementRef<HTMLElement>;
 	@ViewChild("accordion", {static: true}) private accordion!: MatAccordion;
-	@ViewChild("spinner", {static: false}) private spinner?: MatSpinner;
+	@ViewChild("spinner", {static: false}) private spinner?: MatProgressSpinner;
 	@ViewChild("aside", {static: false}) private aside?: ElementRef<HTMLElement>;
 
 	private readonly ITEM_LOAD_COUNT = 20;
@@ -204,6 +204,8 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 		}
 
 		await this.loadNextPage();
+		
+		this.onScroll();
 	}
 
 	async ngOnInit(): Promise<void> {

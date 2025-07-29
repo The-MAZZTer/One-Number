@@ -13,7 +13,7 @@
 		<app-feed-list #feedList></app-feed-list>
 		
 		<mat-nav-list>
-			<button mat-button mat-list-item (click)="toggleEditMode()">
+			<button mat-button (click)="toggleEditMode()">
 				<mat-icon aria-hidden="true">
 					<ng-container *ngIf="!editMode">create</ng-container>
 					<ng-container *ngIf="editMode">arrow_back</ng-container>

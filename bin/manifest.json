@@ -46,7 +46,11 @@
 	],
 
 	"oauth2": {
-    "client_id": "386742653314-kdkd9l1gujh6ln3ci1qp1t11tmdjs52v.apps.googleusercontent.com",
+		"client_id": "386742653314-t3mn18sqibjndrb3b245fc0kmedj185u.apps.googleusercontent.com",
+		"project_id": "onenumber",
+		"auth_uri": "https://accounts.google.com/o/oauth2/auth",
+		"token_uri": "https://oauth2.googleapis.com/token",
+		"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "scopes": [
 			"https://www.googleapis.com/auth/gmail.readonly",
       "https://www.googleapis.com/auth/gmail.modify"

@@ -23,15 +23,16 @@
 		display: flex;
 		flex-direction: row;
 
-		main:not(.openToSide) {
-			flex: 1 1;
-			width: 0;
-		}
-		main.openToSide {
-			width: 33%;
-		}
+		> main {
+			&:not(.openToSide) {
+				flex: 1 1;
+				width: 0;
+			}
 
-		main {
+			&.openToSide {
+				width: 33%;
+			}
+	
 			position: relative;
 			overflow-y: auto;
 
@@ -50,6 +51,12 @@
 							height: 24px;
 							line-height: 24px;
 							margin: 0 5px;
+							padding: 0;
+
+							::ng-deep .mat-mdc-button-touch-target {
+								width: 24px;
+								height: 24px;	
+							}
 						}
 			
 						> .title {

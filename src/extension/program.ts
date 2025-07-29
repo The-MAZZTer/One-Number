@@ -9,15 +9,28 @@ import { Options } from "./services/options";
 
 // TODO
 
-// Allow customize sanitized html for feed items
-	// Create custom content renderer components for each feed type.
+// If fetch fails retry before reporting error
+
+// Don't store HTML in database; store original feed data, convert to HTML at runtime
+
+// Refresh snackbar doesn't always appear?
+
+// Adding fresh gmail gets different messages from periodic sync
+	// Periodic is probably getting All Mail with fresh add getting proper messages.
+
+// Allow customize sanitized html for feed items?
+	// OR just iframe src with data uri?
+	// Create custom content renderer components for each feed type. (don't want to for plugins)
 	// Content in database should be JSON.
 
 // Allow load to side content to be same as load inline (for GMail)
+	// Because iframe doesn't work. Revisit iframe?
 
-// Gmail: Content encoding problems when content encoding doesn't match utf8
+// Gmail: should show messages on white background with black text
 
-// Gmail multipart messages
+// Gmail: Show from in feed item title
+
+// Gmail multipart messages?
 
 // Gmail better permissions explanation
 
@@ -27,6 +40,10 @@ import { Options } from "./services/options";
 
 // Gmail: Open e-mail?
 // https://mail.google.com/mail/<threadid>
+
+// Gmail filter on labels? eg show only important
+
+// Revisit settings for new gmail for clarity?
 
 // Gmail
 // - Auth (readonly and optionally labels?)
@@ -51,7 +68,7 @@ import { Options } from "./services/options";
 // Make sure open aside properly hides images/media if desired.
 
 // More feed types?
-// - Gmail, Youtube, page monitor, Google Fi?, Facebook, Twitter
+// - Gmail, Youtube, page monitor, Google Fi?,
 
 // First-time wizard
 
@@ -59,7 +76,7 @@ import { Options } from "./services/options";
 
 // purge old read feeditems
 
-// color themes
+// color themes?
 // Browser action badge changes colors based on theme
 
 // Browser action shouldn't have the One Number 0 if it has items.
@@ -74,6 +91,69 @@ import { Options } from "./services/options";
 
 // Favicon finder should try to load feed's referenced html page and look for link tag to icon.
 // <link rel="apple-touch-icon">
+
+// Services as separate plugins?
+
+// Empty folder loads forever
+
+// First time selecting top level Add selects Add option for folder
+
+// Some gmails have auto text on white background making them illegible. Add option to force black on white colors.
+
+// Add email option to prefer plain text version
+
+// Removing gmail doesn't clear read item status
+
+// - Rich Notifications
+// - Allow use of Offline Gmail
+// - When updating services, update notification if it's already shown regardless of "new" state (only play "new" if there are new).
+// - Gmail preview not parsing out HTML!
+// - Keep debug on
+// - "Open all" link
+// - Some people don't like new icon
+// 	- Include icon selection?
+// 		- Blank, old icon, new icon?
+// - Some people don't like new GReader open page, add option to change it.
+// 	- Should be able to open view to one label if only that label selected
+// - Service icons: http://carlosjj.deviantart.com/art/New-Google-Product-Icons-175617374?q=&qo=d
+// - content_security_policy manifest field
+// - With no windows open, Open unread in notification does not work
+// - New google nav bar
+// - Add reset button in options
+// - JSON changelog
+// - GMail: Open tablet app
+// - Spoof mouse events to refresh windows
+// 	- GMail: var clickevent=document.createEvent("MouseEvents"); clickevent.initEvent("click", true, true); var frame = top.document.getElementById('canvas_frame'); var inbox = frame.contentWindow.document.getElementsByClassName("n0")[0]; inbox.dispatchEvent(clickevent)
+// - Links to other Google services in popup?
+// - Extension sync settings
+// - Per-service notification settings
+// - Google+?
+// - Google Calendar support?  (Alert with events coming up.)
+// 	- Does GCal support reminders?  Use those instead if possible.
+// 	- Differentiate between read/unread?
+// 	- Google Apps support
+// - Google Docs? (shared docs)
+// - Twitter support?
+// - Buzz support
+// - Picasa?
+// - Facebook?
+// - Tasks?
+// - Groups?
+// - Check arbitrary websites for page updates?
+// - Display of actual items, not services
+// 	- Popup has tabs for each service and a "unified" tab.
+// 	- Service tabs can have a persistant card with stuff like "Compose" etc.
+// 	- Items can mimic rich notification appearance, including action buttons.
+// 		- Items can be opened into the browser window when applicable
+// 	- Each tab has a manual refresh option
+// 	- Each tab has a service open option
+// 	- Gmail:
+// 		- Compose button
+// 		- Links to various boxes... user shortcuts?
+// 	- Feedly
+// 		- Links to various boxes... user shortcuts?
+// 	- Page updates
+// 	- See if I can hook into steam in some way that's cool
 
 class Program {
 	private constructor() {}
@@ -93,7 +173,7 @@ class Program {
 	}
 
 	private static async getTotalUnread(): Promise<number> {
-		return (await new All().getFeedItems(false, false)).length;
+		return await new All().countFeedItems();
 	}
 
 	private static async updateBadge(): Promise<void> {
@@ -108,7 +188,7 @@ class Program {
 
 		const unread = await this.getTotalUnread();
 		if (unread) {
-			chrome.action.setBadgeText({text: unread.toString()});
+			chrome.action.setBadgeText({text: Math.min(unread, 9999).toString()});
 			if (!errors.length) {
 				chrome.action.setTitle({title: `${unread} unread items - One Number`});
 			}

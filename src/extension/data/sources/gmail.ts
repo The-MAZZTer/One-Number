@@ -1,5 +1,5 @@
 import { AuthenticationStatus, GApi } from "../../services/gapi/gapi";
-import { Format, HistoryType, Message, Thread, UsersHistoryList, UsersHistoryListParams, UsersMessagesList, UsersMessagesListParams, UsersThreadsList, History, UsersGetProfile } from "../../services/gapi/gmail";
+import { Format, HistoryType, Message, Thread, UsersHistoryList, UsersHistoryListParams, UsersMessagesList, UsersMessagesListParams, UsersThreadsList, UsersGetProfile, MessagePart } from "../../services/gapi/gmail";
 import { GApiScopes } from "../../services/gapi/scopes";
 import { FeedItemSchema, FeedSchema } from "../dbContext";
 import { Deltas, Feed, FeedItem } from "../feed";
@@ -481,6 +481,7 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 
 	private formatMessage(message: Message): string {
 		// TODO multipart/ messages?
+		// multipart/alternative; boundary="XXXXXXXXXXXXXXXXX"
 
 		const allowedHeaders: Record<string, true> = {
 			"from": true,
@@ -489,19 +490,65 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 			"cc": true,
 			"bcc": true
 		}
-		const headers = message.payload!.headers
+		let headers = message.payload!.headers
 			.where(x => allowedHeaders[x.name.toLowerCase()] )
 			.select(x => `<p><b>${this.escapeHtml(x.name)}</b>: ${this.escapeHtml(x.value)}</p>`)
 			.toArray().join("");
+		headers += `<p><b>Date</b>: ${new Date(parseInt(message.internalDate!, 10))}</p>`;
+		let part: MessagePart;
+		let isHtml: boolean
 		if (message.payload!.body.data) {
-			// TODO show content in frame?
-			//return headers + `<p><b>Date</b>: ${new Date(parseInt(message.internalDate!, 10))}</p><iframe allow="fullscreen 'none'; geolocation 'none'; camera 'none'; microphone 'none'" allowFullscreen="false" allowPaymentRequest="false" sandbox src="data:text/html;base64,${encodeURI(message.payload!.body.data.replace(/-/g, "+").replace(/_/g, "/"))}`;
-			return headers + `<p><b>Date</b>: ${new Date(parseInt(message.internalDate!, 10))}</p><main>${atob(message.payload!.body.data.replace(/-/g, "+").replace(/_/g, "/"))}</main>`;
+			part = message.payload!;
+			isHtml = true;
 		} else {
-			// TODO multipart/ messages?
-			// multipart/alternative; boundary="XXXXXXXXXXXXXXXXX"
-			return headers + `<p><b>Date</b>: ${new Date(parseInt(message.internalDate!, 10))}</p>`;
+			part = message.payload!.parts.firstOrDefault(x => x.mimeType.localeCompare("text/html", undefined, {
+				usage: "search",
+				sensitivity: "base"
+			}) === 0);
+			if (part) {
+				isHtml = true;
+			} else {
+				part = message.payload!.parts.firstOrDefault(x => x.mimeType.localeCompare("text/plain", undefined, {
+					usage: "search",
+					sensitivity: "base"
+				}) === 0);
+				if (!part) {
+					part = message.payload!.parts.firstOrDefault();
+				}
+
+				isHtml = false;
+			}
 		}
+
+		/*const contentType = part.headers!.firstOrDefault(x => x.name.localeCompare("Content-Type", undefined, {
+			usage: "search",
+			sensitivity: "base"
+		}) === 0);
+		if (contentType) {
+			const args = contentType.value.split(';').skip(1).toObject(x => x.substring(0, x.indexOf('=')).trim().toLowerCase(), x => x.substring(x.indexOf('=') + 1).trim());
+			let charset = args["charset"];
+			if (charset) {
+				if (charset.startsWith('"')) {
+					let index = charset.indexOf('"', 1);
+					charset = charset.substring(1, index >= 0 ? index : undefined).trim();
+				}
+
+				console.log(charset.toUpperCase());
+			}
+		}*/
+
+		let payload = atob(part.body.data.replace(/-/g, "+").replace(/_/g, "/"));
+
+		// https://stackoverflow.com/questions/5396560/how-do-i-convert-special-utf-8-chars-to-their-iso-8859-1-equivalent-using-javasc
+		payload = decodeURIComponent(escape(payload));
+
+		if (!isHtml) {
+			payload = this.escapeHtml(payload);
+		}
+
+		// TODO show content in frame?
+		//return headers + `<iframe allow="fullscreen 'none'; geolocation 'none'; camera 'none'; microphone 'none'" allowFullscreen="false" allowPaymentRequest="false" sandbox src="data:text/html;base64,${encodeURI(message.payload!.body.data.replace(/-/g, "+").replace(/_/g, "/"))}`;
+		return headers + `<main>${payload}</main>`;
 	}
 
 	public get messageCount(): number {
