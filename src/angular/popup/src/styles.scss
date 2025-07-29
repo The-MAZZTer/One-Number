@@ -21,22 +21,22 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$light-primary: mat.define-palette(mat.$deep-purple-palette);
-$light-accent: mat.define-palette(mat.$indigo-palette);
+$light-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette);
+$light-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
 
-$dark-primary: mat.define-palette(mat.$deep-purple-palette);
-$dark-accent: mat.define-palette(mat.$indigo-palette);
+$dark-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette);
+$dark-accent: mat.m2-define-palette(mat.$m2-indigo-palette);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$light-theme: mat.define-light-theme((
+$light-theme: mat.m2-define-light-theme((
   color: (
     primary: $light-primary,
     accent: $light-accent
   )
 ));
 
-$dark-theme: mat.define-dark-theme((
+$dark-theme: mat.m2-define-dark-theme((
   color: (
     primary: $dark-primary,
     accent: $dark-accent
@@ -51,11 +51,11 @@ $dark-theme: mat.define-dark-theme((
 /* You can add global styles to this file, and also import other style files */
 
 a:not(.stealth)[href] {
-  color: mat.get-color-from-palette($light-accent);
+  color: mat.m2-get-color-from-palette($light-accent);
 }
 
 a:not(.stealth):visited[href] {
-  color: mat.get-color-from-palette($light-accent, 900);
+  color: mat.m2-get-color-from-palette($light-accent, 900);
 }
 
 a.stealth[href], a.stealth:visited[href], a.stealth:active[href] {
@@ -66,11 +66,11 @@ html.dark {
   @include mat.all-component-colors($dark-theme);
 
   a:not(.stealth)[href] {
-    color: mat.get-color-from-palette($dark-accent);
+    color: mat.m2-get-color-from-palette($dark-accent);
   }  
 
   a:not(.stealth):visited[href] {
-    color: mat.get-color-from-palette($dark-accent, 100);
+    color: mat.m2-get-color-from-palette($dark-accent, 100);
   }
 
   a.stealth[href], a.stealth:visited[href], a.stealth:active[href] {
