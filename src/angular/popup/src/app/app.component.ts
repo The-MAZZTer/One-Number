@@ -9,9 +9,10 @@ import { MessageService } from "../../../tab/src/app/services/messages/message.s
 import { DomSanitizer, SafeUrl } from "@angular/platform-browser";
 
 @Component({
-	selector: "app-root",
-	templateUrl: "./app.component.html",
-	styleUrls: ["./app.component.scss"]
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit {
 	@ViewChild("section", {static: true}) private section!: ElementRef<HTMLElement>;

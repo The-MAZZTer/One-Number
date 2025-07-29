@@ -11,9 +11,10 @@ import { Options, OptionChanges } from "../../../../extension/services/options";
 import { Enumerable } from "linq";
 
 @Component({
-	selector: "app-root",
-	templateUrl: "./app.component.html",
-	styleUrls: ["./app.component.scss"]
+    selector: "app-root",
+    templateUrl: "./app.component.html",
+    styleUrls: ["./app.component.scss"],
+    standalone: false
 })
 export class AppComponent implements OnInit {
 	@ViewChild("search", { static: true }) search!: SearchBarComponent;

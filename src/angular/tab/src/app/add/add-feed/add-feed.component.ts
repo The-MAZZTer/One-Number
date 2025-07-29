@@ -8,8 +8,9 @@ import { FeedItemSchema, FeedSchema } from "../../../../../../extension/data/dbC
 import { Deltas, Feed, FeedItem, Folder } from "../../../../../../extension/data/feed";
 
 @Component({
-	templateUrl: "./add-feed.component.html",
-	styleUrls: ["./add-feed.component.scss"]
+    templateUrl: "./add-feed.component.html",
+    styleUrls: ["./add-feed.component.scss"],
+    standalone: false
 })
 export class AddFeedComponent implements OnInit {
 	@ViewChild("properties", { static: true }) private properties!: FeedPropertiesComponent;

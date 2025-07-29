@@ -4,8 +4,9 @@ import { ActivatedRoute } from "@angular/router";
 import { Feed, Folder } from "../../../../../../extension/data/feed";
 
 @Component({
-	templateUrl: "./add-type-select.component.html",
-	styleUrls: ["./add-type-select.component.scss"]
+    templateUrl: "./add-type-select.component.html",
+    styleUrls: ["./add-type-select.component.scss"],
+    standalone: false
 })
 export class AddTypeSelectComponent implements OnInit {
 	constructor(private route: ActivatedRoute, private title: Title) {

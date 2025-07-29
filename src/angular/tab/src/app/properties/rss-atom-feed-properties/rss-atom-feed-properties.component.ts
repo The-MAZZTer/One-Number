@@ -2,9 +2,10 @@ import { Component, Input } from "@angular/core";
 import { RssAtomFeed } from "../../../../../../extension/data/sources/rssatom";
 
 @Component({
-	selector: "app-rss-atom-feed-properties",
-	templateUrl: "./rss-atom-feed-properties.component.html",
-	styleUrls: ["./rss-atom-feed-properties.component.scss"]
+    selector: "app-rss-atom-feed-properties",
+    templateUrl: "./rss-atom-feed-properties.component.html",
+    styleUrls: ["./rss-atom-feed-properties.component.scss"],
+    standalone: false
 })
 export class RssAtomFeedPropertiesComponent {
 	@Input() feed?: RssAtomFeed;

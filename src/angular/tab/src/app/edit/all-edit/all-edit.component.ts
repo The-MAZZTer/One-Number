@@ -5,8 +5,9 @@ import { All } from "../../../../../../extension/data/feed";
 import { Options, OptionValues, OptionChanges, OptionKeys } from "../../../../../../extension/services/options";
 
 @Component({
-	templateUrl: "./all-edit.component.html",
-	styleUrls: ["./all-edit.component.scss"]
+    templateUrl: "./all-edit.component.html",
+    styleUrls: ["./all-edit.component.scss"],
+    standalone: false
 })
 export class AllEditComponent implements OnInit, OnDestroy {
 	options!: Partial<OptionValues>;

@@ -4,9 +4,10 @@ import { FeedItemSchema, FeedSchema } from "../../../../../../extension/data/dbC
 import { Deltas, Feed, FeedItem } from "../../../../../../extension/data/feed";
 
 @Component({
-	selector: "app-feed-preview",
-	templateUrl: "./feed-preview.component.html",
-	styleUrls: ["./feed-preview.component.scss"]
+    selector: "app-feed-preview",
+    templateUrl: "./feed-preview.component.html",
+    styleUrls: ["./feed-preview.component.scss"],
+    standalone: false
 })
 export class FeedPreviewComponent {
 	@Input() feed?: Feed<FeedSchema>;

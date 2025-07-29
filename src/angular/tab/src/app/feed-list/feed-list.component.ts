@@ -14,9 +14,10 @@ import { FeedItemListComponent } from "../feed-item-list/feed-item-list.componen
 import { MessageService } from "../services/messages/message.service";
 
 @Component({
-	selector: "app-feed-list",
-	templateUrl: "./feed-list.component.html",
-	styleUrls: ["./feed-list.component.scss"]
+    selector: "app-feed-list",
+    templateUrl: "./feed-list.component.html",
+    styleUrls: ["./feed-list.component.scss"],
+    standalone: false
 })
 export class FeedListComponent implements OnInit {
 	@ViewChild("feedList", { static: true }) feedList!: MatTree<FeedListItem>;

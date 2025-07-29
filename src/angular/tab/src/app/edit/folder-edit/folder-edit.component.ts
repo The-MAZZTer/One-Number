@@ -9,8 +9,9 @@ import { MessageService } from "src/app/services/messages/message.service";
 import { Folder } from "../../../../../../extension/data/feed";
 
 @Component({
-	templateUrl: "./folder-edit.component.html",
-	styleUrls: ["./folder-edit.component.scss"]
+    templateUrl: "./folder-edit.component.html",
+    styleUrls: ["./folder-edit.component.scss"],
+    standalone: false
 })
 export class FolderEditComponent implements OnInit {
 	@ViewChild("properties", { static: true }) properties!: FolderPropertiesComponent;

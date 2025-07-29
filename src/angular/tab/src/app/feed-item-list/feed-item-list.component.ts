@@ -13,8 +13,9 @@ import { Options, OptionChanges } from "../../../../../extension/services/option
 import { MessageService } from "../services/messages/message.service";
 
 @Component({
-	templateUrl: "./feed-item-list.component.html",
-	styleUrls: ["./feed-item-list.component.scss"]
+    templateUrl: "./feed-item-list.component.html",
+    styleUrls: ["./feed-item-list.component.scss"],
+    standalone: false
 })
 export class FeedItemListComponent implements OnInit, OnDestroy {
 	@ViewChild("section", {static: true}) private section!: ElementRef<HTMLElement>;

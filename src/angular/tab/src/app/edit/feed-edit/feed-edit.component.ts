@@ -11,8 +11,9 @@ import { Deltas, Feed, FeedItem } from "../../../../../../extension/data/feed";
 import { FeedPropertiesComponent } from "src/app/properties/feed-properties/feed-properties.component";
 
 @Component({
-	templateUrl: "./feed-edit.component.html",
-	styleUrls: ["./feed-edit.component.scss"]
+    templateUrl: "./feed-edit.component.html",
+    styleUrls: ["./feed-edit.component.scss"],
+    standalone: false
 })
 export class FeedEditComponent implements OnInit {
 	@ViewChild("properties", { static: true }) private properties!: FeedPropertiesComponent;

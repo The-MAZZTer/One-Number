@@ -7,9 +7,10 @@ import { GmailPropertiesComponent } from "../gmail-properties/gmail-properties.c
 import { RssAtomFeedPropertiesComponent } from "../rss-atom-feed-properties/rss-atom-feed-properties.component";
 
 @Component({
-	selector: "app-feed-properties",
-	templateUrl: "./feed-properties.component.html",
-	styleUrls: ["./feed-properties.component.scss"]
+    selector: "app-feed-properties",
+    templateUrl: "./feed-properties.component.html",
+    styleUrls: ["./feed-properties.component.scss"],
+    standalone: false
 })
 export class FeedPropertiesComponent {
 	@ViewChild("rssAtomFeedProperties", { static: false }) private rssAtomFeedProperties?: RssAtomFeedPropertiesComponent;

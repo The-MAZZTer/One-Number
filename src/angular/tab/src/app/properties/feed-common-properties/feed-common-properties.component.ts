@@ -4,9 +4,10 @@ import { Feed } from "../../../../../../extension/data/feed";
 import { Options, OptionChanges } from "../../../../../../extension/services/options";
 
 @Component({
-	selector: "app-feed-common-properties",
-	templateUrl: "./feed-common-properties.component.html",
-	styleUrls: ["./feed-common-properties.component.scss"]
+    selector: "app-feed-common-properties",
+    templateUrl: "./feed-common-properties.component.html",
+    styleUrls: ["./feed-common-properties.component.scss"],
+    standalone: false
 })
 export class FeedCommonPropertiesComponent implements OnInit, OnDestroy {
 	@Input() feed?: Feed<FeedSchema>;

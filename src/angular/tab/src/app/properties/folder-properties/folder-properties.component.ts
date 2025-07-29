@@ -2,9 +2,10 @@ import { Component, Input } from "@angular/core";
 import { Folder } from "../../../../../../extension/data/feed";
 
 @Component({
-	selector: "app-folder-properties",
-	templateUrl: "./folder-properties.component.html",
-	styleUrls: ["./folder-properties.component.scss"]
+    selector: "app-folder-properties",
+    templateUrl: "./folder-properties.component.html",
+    styleUrls: ["./folder-properties.component.scss"],
+    standalone: false
 })
 export class FolderPropertiesComponent {
 	@Input() folder?: Folder;

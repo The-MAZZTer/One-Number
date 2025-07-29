@@ -2,9 +2,10 @@ import { Component, Input } from "@angular/core";
 import { GmailFeed } from "../../../../../../extension/data/sources/gmail";
 
 @Component({
-	selector: "app-gmail-properties",
-	templateUrl: "./gmail-properties.component.html",
-	styleUrls: ["./gmail-properties.component.scss"]
+    selector: "app-gmail-properties",
+    templateUrl: "./gmail-properties.component.html",
+    styleUrls: ["./gmail-properties.component.scss"],
+    standalone: false
 })
 export class GmailPropertiesComponent {
 	private _feed?: GmailFeed;

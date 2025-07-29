@@ -2,8 +2,9 @@ import { Component, Inject } from "@angular/core";
 import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
 
 @Component({
-	templateUrl: "./message-box.component.html",
-	styleUrls: ["./message-box.component.scss"]
+    templateUrl: "./message-box.component.html",
+    styleUrls: ["./message-box.component.scss"],
+    standalone: false
 })
 export class MessageBoxComponent {
 	constructor(public dialogRef: MatDialogRef<MessageBoxComponent>,

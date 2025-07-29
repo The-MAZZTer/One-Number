@@ -5,8 +5,9 @@ import { MessageService } from "src/app/services/messages/message.service";
 import { Folder } from "../../../../../../extension/data/feed";
 
 @Component({
-	templateUrl: "./add-folder.component.html",
-	styleUrls: ["./add-folder.component.scss"]
+    templateUrl: "./add-folder.component.html",
+    styleUrls: ["./add-folder.component.scss"],
+    standalone: false
 })
 export class AddFolderComponent implements OnInit {
 	constructor(private router: Router, private route: ActivatedRoute, private messages: MessageService,
