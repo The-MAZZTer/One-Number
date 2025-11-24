@@ -18,7 +18,7 @@ export class AllEditComponent implements OnInit, OnDestroy {
 	}
 
 	async ngOnInit(): Promise<void> {
-		this.title.setTitle("Options - One Number");
+		this.title.setTitle("General Options - One Number");
 
 		this.optionsChangedHandle = Options.addListener(this.onStorageChanged.bind(this));
 		this.options = await Options.getMany("queryInterval", "notification", "purgeAfter", "showAudioVideo",
@@ -34,7 +34,7 @@ export class AllEditComponent implements OnInit, OnDestroy {
 			(this.options as any)[key] = changes[key as OptionKeys].newValue;
 		}
 		if (changes.queryInterval) {
-			this.savedQueryInterval = changes.queryInterval.newValue;
+			this.savedQueryInterval = <number>changes.queryInterval.newValue;
 		}
 	}
 

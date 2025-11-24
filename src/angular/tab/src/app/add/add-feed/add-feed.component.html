@@ -1,8 +1,8 @@
 <h1>{{caption}}</h1>
-<h3>Enter the following information and then click Add:</h3>
+<h3>Modify as desired and click Add when finished.</h3>
 
 <form #form>
-	<app-feed-properties #properties [feed]="feed"></app-feed-properties>
+	<app-feed-properties #properties [feed]="feed" [isNew]="true"></app-feed-properties>
 	<p>
 		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="showPreview(preview)">Preview</button>
 		<button mat-raised-button color="primary" [disabled]="!form.checkValidity() || !properties.valid" (click)="submit(preview)">Add</button>

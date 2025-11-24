@@ -1,11 +1,21 @@
-export interface GApiCall {
+export type GApiCall = {
 	api: string,
 	verb?: string,
 	query?: {
 		[key: string]: string
 	},
 	body?: any
+};
+
+export class GApiEndpoint<TRet = void, TArg1 = void, TArg2 = void, TArg3 = void> {
+	constructor(public prepare: (arg1: TArg1, arg2: TArg2, arg3: TArg3) => GApiCall,
+		private fetch: (options: GApiCall) => Promise<TRet>) {}
+
+	public call(arg1: TArg1, arg2: TArg2, arg3: TArg3): Promise<TRet> {
+		return this.fetch(this.prepare(arg1, arg2, arg3));
+	}
 }
+
 
 export abstract class GApiBase {
 	private fetch: <T>(options: GApiCall) => Promise<T>;

@@ -142,6 +142,11 @@
 		
 					mat-card-content {
 						padding: 0 16px 16px;
+
+						&.forceColor ::ng-deep > main {
+							color: black;
+							background-color: white;
+						}
 		
 						::ng-deep img {
 							max-width: 100% !important;

@@ -17,6 +17,7 @@ export class FeedPropertiesComponent {
 	@ViewChild("gmailProperties", { static: false }) private gmailProperties?: GmailPropertiesComponent;
 
 	@Input() feed?: Feed<FeedSchema>;
+	@Input() isNew: boolean = false;
 
 	public get needsRefetch(): boolean {
 		if (this.feedIsRssAtomFeed) {

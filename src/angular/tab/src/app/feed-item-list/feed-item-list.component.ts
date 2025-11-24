@@ -42,6 +42,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 	private feedItemsChangedSubscription!: Subscription;
 	private feedItemsReadChangedSubscription!: Subscription;
 	private feedItemStarChangedSubscription!: Subscription;
+	private oldFeedItemsDeletedSubscription!: Subscription;
 
 	private loading = false;
 
@@ -93,10 +94,14 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 		return this.popupView.type === (path === "" ? "all" : path) as ("all" | "star" | "folder" | "feed")
 			&& this.popupView.id === id;
 	}
-	setPopupViewToCurrent(): void {
+	togglePopupViewCurrent(): void {
 		const id = this.route.snapshot.params["id"] ? parseInt(this.route.snapshot.params["id"], 10) : 0;
 		const path = (this.route.snapshot.routeConfig?.path?.split("/")[0]);
-		this.popupView = {type: (path === "" ? "all" : path) as ("all" | "star" | "folder" | "feed"), id};
+		if (this.popupViewIsCurrent) {
+			this.popupView = {type: "all", id: 0};
+		} else {
+			this.popupView = {type: (path === "" ? "all" : path) as ("all" | "star" | "folder" | "feed"), id};
+		}
 		Options.set({
 			popupView: this.popupView
 		});
@@ -275,6 +280,10 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 			}
 		});
 
+		this.oldFeedItemsDeletedSubscription = this.messages.oldFeedItemsDeleted.subscribe(async x => {
+			this.items = this.items.filter(y => !x.deleted.contains(y.id));
+		});
+
 		this.feedItemsReadChangedSubscription = this.messages.feedItemsReadChanged.subscribe(x => {
 			const items = this.items.toObject<FeedItem<FeedItemSchema>>(y => y.id.toString());
 			for (const modified of x) {
@@ -325,6 +334,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 		this.feedItemsChangedSubscription.unsubscribe();
 		this.feedItemsReadChangedSubscription.unsubscribe();
 		this.feedItemStarChangedSubscription.unsubscribe();
+		this.oldFeedItemsDeletedSubscription.unsubscribe();
 
 		if (this.snack) {
 			this.snack.dismiss();
@@ -350,7 +360,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 			}
 		}*/
 		if (changes.popupView) {
-			this.popupView = changes.popupView.newValue;
+			this.popupView = <{type: "all" | "star" | "folder" | "feed", id: number}>changes.popupView.newValue;
 		}
 	}
 
@@ -466,7 +476,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 		if (content.innerHTML) {
 			return;
 		}
-		content.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, item.content) ?? "";
+		content.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, item.toHtml()) ?? "";
 		for (const a of Enumerable.fromNodeList(content.getElementsByTagName("a")).cast<HTMLAnchorElement>()) {
 			a.target = "_blank";
 			if (a.href && new URL(a.href, document.baseURI).protocol.toLowerCase() === "chrome-extension:") {
@@ -507,7 +517,7 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 					`<iframe is="x-frame-bypass" allow="fullscreen 'none'; geolocation 'none'; camera 'none'; microphone 'none'" sandbox="allow-scripts allow-popups"></iframe>`;
 				this.aside.nativeElement.getElementsByTagName("iframe")[0].src = item.url;
 			} else {
-				this.aside.nativeElement.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, item.content) ?? "";
+				this.aside.nativeElement.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, item.toHtml()) ?? "";
 			}
 		}
 	}
@@ -599,6 +609,22 @@ export class FeedItemListComponent implements OnInit, OnDestroy {
 		}
 
 		return item.media.url;
+	}
+
+	forceColor(item: FeedItem<FeedItemSchema>): boolean {
+		const feed = this.feeds[item.feedId];
+		if (!feed) {
+			return false;
+		}
+		return feed.forceLightModeContent;
+	}
+
+	customButtons(item: FeedItem<FeedItemSchema>): string[] {
+		const feed = this.feeds[item.feedId];
+		if (!feed) {
+			return [];
+		}
+		return item.customButtons(feed);
 	}
 
 	@HostListener("keydown", ["$event"])

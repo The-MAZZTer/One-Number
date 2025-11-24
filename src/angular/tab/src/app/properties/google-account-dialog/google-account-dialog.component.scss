@@ -1,0 +1,15 @@
+:host {
+ display: block;
+}
+
+mat-radio-button {
+	display: block;
+}
+
+mat-form-field {
+	margin-left: 2.5em;
+}
+
+[mat-dialog-actions] {
+	justify-content: end;
+}

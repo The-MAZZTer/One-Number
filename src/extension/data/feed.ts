@@ -74,6 +74,29 @@ export class All {
 		})).select(x => Feed.fromFeedSchema(x)).toArray();
 	}
 
+	public async deleteOldFeedItems(cutoff: Date): Promise<FeedItem<FeedItemSchema>[]> {
+		const db = await this.openDb();
+		const items = (await db.feedItems.select({
+			where: {
+				read: {
+					"!=": new Date(0)
+				},
+				star: 0,
+				published: {
+					"<=": cutoff
+				}
+			}
+		})).select(x => FeedItem.fromFeedItemSchema(x)).toArray();
+		await db.feedItems.remove({
+			where: {
+				id: {
+					in: items.select(x => x.id).toArray()
+				}
+			}
+		});
+		return items;
+	}
+
 	public async adjustNextRefresh(oldInterval: number, newInterval: number): Promise<void> {
 		const delta = (newInterval - oldInterval) * 60 * 1000;
 		const db = await this.openDb();
@@ -151,7 +174,7 @@ export class Folder {
 	}
 
 	public async save() {
-		let db = await this.openDb();
+		const db = await this.openDb();
 		this.folder = (await db.folders.insertAndReturn({
 			upsert: true,
 			values: [this.folder]
@@ -353,7 +376,7 @@ export abstract class Feed<T extends FeedSchema> {
 	}
 
 	public async save() {
-		let db = await this.openDb();
+		const db = await this.openDb();
 		this.feed = (await db.feeds.insertAndReturn({
 			upsert: true,
 			values: [this.feed]
@@ -461,6 +484,13 @@ export abstract class Feed<T extends FeedSchema> {
 		this.feed.notification = value;
 	}
 
+	public get forceLightModeContent(): boolean {
+		return this.feed.forceLightModeContent;
+	}
+	public set forceLightModeContent(value: boolean) {
+		this.feed.forceLightModeContent = value;
+	}
+
 	public get lastError(): string {
 		return this.feed.lastError;
 	}
@@ -544,7 +574,7 @@ export abstract class Feed<T extends FeedSchema> {
 	}
 
 	public async countFeedItems(): Promise<number> {
-		let db = await this.openDb();
+		const db = await this.openDb();
 		return await db.feedItems.count({
 			where: {
 				feedId: this.feed.id,
@@ -569,13 +599,13 @@ export abstract class Feed<T extends FeedSchema> {
 			query.where!["read"] = new Date(0);
 		}
 
-		let db = await this.openDb();
+		const db = await this.openDb();
 		return (await db.feedItems.select(query))
 			.select(x => FeedItem.fromFeedItemSchema(x)).toArray();
 	}
 
 	public async delete(): Promise<void> {
-		let db = await this.openDb();
+		const db = await this.openDb();
 		await db.deleteFeed(this.feed);
 		this.feed.id = 0;
 	}
@@ -683,7 +713,7 @@ export abstract class FeedItem<T extends FeedItemSchema> {
 	private static types: Record<string, new(feedItem?: any) => FeedItem<FeedItemSchema>> = {};
 
 	public static async fromId(id: number): Promise<FeedItem<FeedItemSchema> | null> {
-		let db =  new DbContext();
+		const db =  new DbContext();
 		const feedItem = await db.feedItems.selectFirst({
 			where: {
 				id: id
@@ -748,7 +778,7 @@ export abstract class FeedItem<T extends FeedItemSchema> {
 	}
 
 	public async save() {
-		let db = await this.openDb();
+		const db = await this.openDb();
 		this.feedItem = (await db.feedItems.insertAndReturn({
 			upsert: true,
 			values: [this.feedItem]
@@ -848,4 +878,12 @@ export abstract class FeedItem<T extends FeedItemSchema> {
 		return textarea.value;
 	}
 
+	public abstract toHtml(): string;
+
+	public customButtons(feed: Feed<FeedSchema>): string[] {
+		return [];
+	}
+
+	public invokeCustomButton(index: number) {
+	}
 }

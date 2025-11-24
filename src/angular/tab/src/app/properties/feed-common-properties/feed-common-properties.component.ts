@@ -28,6 +28,16 @@ export class FeedCommonPropertiesComponent implements OnInit, OnDestroy {
 		this.feed.overrideName = value;
 	}
 
+	get forceLightModeContent(): boolean {
+		return this.feed?.forceLightModeContent ?? false;
+	}
+	set forceLightModeContent(value: boolean) {
+		if (!this.feed) {
+			return;
+		}
+		this.feed.forceLightModeContent = value;
+	}
+
 	get useDefaultQueryInterval(): boolean {
 		return this.feed?.queryInterval === 0;
 	}
@@ -81,10 +91,10 @@ export class FeedCommonPropertiesComponent implements OnInit, OnDestroy {
 
 	private onStorageChanged(changes: OptionChanges): void {
 		if (changes.queryInterval) {
-			this.defaultQueryInterval = changes.queryInterval.newValue;
+			this.defaultQueryInterval = <number>changes.queryInterval.newValue;
 		}
 		if (changes.notification) {
-			this.defaultNotification = changes.notification.newValue;
+			this.defaultNotification = <boolean>changes.notification.newValue;
 		}
 	}
 }

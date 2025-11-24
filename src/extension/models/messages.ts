@@ -20,3 +20,7 @@ export interface FeedItemsChangedMessage extends Message, Deltas<number> {
 	type: "feedItemsChanged" | "notification",
 	feedId: number
 };
+
+export interface OldFeedItemsDeletedMessage extends Message, Deltas<number> {
+	type: "oldFeedItemsDeleted"
+};

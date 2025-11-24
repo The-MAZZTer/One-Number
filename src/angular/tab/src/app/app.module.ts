@@ -45,6 +45,7 @@ import { FeedListComponent } from "./feed-list/feed-list.component";
 import { SearchBarComponent } from "./search-bar/search-bar.component";
 import { FeedPropertiesComponent } from "./properties/feed-properties/feed-properties.component";
 import { GmailPropertiesComponent } from './properties/gmail-properties/gmail-properties.component';
+import { GoogleAccountDialogComponent } from './properties/google-account-dialog/google-account-dialog.component';
 
 @NgModule({
   declarations: [
@@ -66,7 +67,8 @@ import { GmailPropertiesComponent } from './properties/gmail-properties/gmail-pr
 		MessageBoxComponent,
 		FeedListComponent,
 		SearchBarComponent,
-		GmailPropertiesComponent
+		GmailPropertiesComponent,
+  GoogleAccountDialogComponent
   ],
   imports: [
     BrowserModule,

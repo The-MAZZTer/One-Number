@@ -1,22 +1,43 @@
-<p>
-  @if (feed && !feed.isAuthed) {
-    <button mat-raised-button color="primary" (click)="auth()">
-      <mat-icon>security</mat-icon>
-      Grant
-    </button>
-  }
-  @if (feed && !feed.isAuthed) {
-    One Number requires additional permissions.
-  }
-  @if (feed && feed.isAuthed) {
-    One Number has the required access to your Gmail.
-  }
-</p>
-
 @if (feed) {
-  <mat-checkbox [(ngModel)]="feed.showAsThreads" [ngModelOptions]="{standalone: true}">Group messages together in conversations</mat-checkbox>
-}
+	<p>
+		@if (!feed.isRequiredAuthed) {
+			<button mat-raised-button color="primary" (click)="auth()">
+				<mat-icon>security</mat-icon>
+				Grant
+			</button>
 
-@if (feed) {
-  <mat-checkbox [(ngModel)]="feed.syncReadToGmail" [ngModelOptions]="{standalone: true}">Synchronize message read status back to Gmail</mat-checkbox>
+			One Number requires additional permissions.
+
+			<h3>Required:</h3>
+
+			<ul>
+				<li><strong>Read all resources and their metadata—no write operations.</strong> - Required to show emails in One Number.</li>
+			</ul>
+
+			<h3>Optional:</h3>
+
+			<ul>
+				<li><strong>All read/write operations except immediate, permanent deletion of threads and messages, bypassing Trash.</strong> - Grant if you want to be able to sync read or archived status back to Gmail.</li>
+			</ul>
+		} @if (feed.isRequiredAuthed && !feed.isOptionalAuthed) {
+			<button mat-raised-button color="primary" (click)="auth()">
+				<mat-icon>security</mat-icon>
+				Change
+			</button>
+
+			One Number has the minmal required access to your Gmail.
+
+			<h6>Optional:</h6>
+
+			<ul>
+				<li><strong>All read/write operations except immediate, permanent deletion of threads and messages, bypassing Trash.</strong> - Grant if you want to be able to sync read or archived status back to Gmail.</li>
+			</ul>
+		}
+		@if (feed.isOptionalAuthed) {
+			One Number has access to your Gmail.
+		}
+	</p>
+
+	<mat-checkbox [(ngModel)]="feed.showAsThreads" [ngModelOptions]="{standalone: true}">Group messages together in conversations</mat-checkbox>
+	<mat-checkbox [(ngModel)]="feed.syncReadToGmail" [ngModelOptions]="{standalone: true}">Synchronize message read status back to Gmail</mat-checkbox>
 }

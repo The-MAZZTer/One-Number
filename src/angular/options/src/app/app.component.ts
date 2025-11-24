@@ -9,7 +9,7 @@ import { Enumerable } from "linq";
     standalone: false
 })
 export class AppComponent implements OnInit {
-	private theme: (null | "light" | "dark") = null;
+	private theme: Theme = null;
 
 	async ngOnInit(): Promise<void> {
 		Options.addListener(this.onStorageChanged.bind(this));
@@ -24,13 +24,13 @@ export class AppComponent implements OnInit {
 
 	private onStorageChanged(changes: OptionChanges): void {
 		if (changes.theme) {
-			this.theme = changes.theme.newValue;
+			this.theme = <Theme>changes.theme.newValue;
 			this.setTheme();
 		}
 	}
 
 	private setTheme(): void {
-		let theme: (null | "light" | "dark") = this.theme;
+		let theme: Theme = this.theme;
 		if (!theme) {
 			if (window.matchMedia("(prefers-color-scheme)").media !== "not all") {
 				theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -50,3 +50,6 @@ export class AppComponent implements OnInit {
 		});
 	}
 }
+
+type Theme = null | "light" | "dark";
+

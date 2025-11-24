@@ -5,6 +5,7 @@ import { FeedItemSchema, FeedSchema } from "../dbContext";
 import { Deltas, Feed, FeedItem } from "../feed";
 
 interface GmailFeedSchema extends FeedSchema {
+	accountId?: string,
 	syncReadToGmail: boolean,
 	showAsThreads: boolean,
 	historyId: string | null
@@ -31,26 +32,31 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 		}
 	}
 
+	public get account(): string | undefined {
+		return this.feed.accountId;
+	}
+	public set account(value: string | undefined) {
+		this.feed.accountId = value;
+	}
+
 	private gapi: GApi | null = null;
 	public async initGapi(): Promise<void> {
-		if (this.feed.syncReadToGmail) {
-			this.gapi = await GApi.create([
-				"https://www.googleapis.com/auth/gmail.readonly",
-				"https://www.googleapis.com/auth/gmail.modify"
-			]);	
-		}
-		if (!this.gapi || this.gapi.status !== AuthenticationStatus.auth) {
+		if (!this.gapi || this.gapi.account?.id != this.feed.accountId || this.gapi.status !== AuthenticationStatus.auth) {
 			this.gapi = await GApi.create([
 				"https://www.googleapis.com/auth/gmail.readonly"
-			]);
+			], [
+				"https://www.googleapis.com/auth/gmail.modify"
+			], this.feed.accountId ? {
+				id: this.feed.accountId
+			} : undefined);
 		}
 		if (this.gapi.status !== AuthenticationStatus.auth) {
 			this.gapi = null;
 		}
 	}
 
-	public get isAuthed(): boolean {
-		if (!this.gapi || !this.gapi.grantedScopes) {
+	public get isRequiredAuthed(): boolean {
+		if (!this.gapi || !this.gapi.grantedScopes || this.gapi.account?.id != this.feed.accountId) {
 			return false;
 		}
 
@@ -60,7 +66,15 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 			return false;
 		}
 
-		if (this.feed.syncReadToGmail && !this.gapi.grantedScopes.contains(
+		return true;
+	}
+
+	public get isOptionalAuthed(): boolean {
+		if (!this.gapi || !this.isRequiredAuthed) {
+			return false;
+		}
+
+		if (!this.gapi.grantedScopes.contains(
 			"https://www.googleapis.com/auth/gmail.modify"
 		)) {
 			return false;
@@ -70,27 +84,25 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 	}
 
 	public async signIn(): Promise<void> {
-		if (!this.gapi) {
+		if (!this.gapi || this.gapi.account?.id != this.feed.accountId) {
 			await this.initGapi();
 		}
-		const scopes: GApiScopes[] = this.feed.syncReadToGmail ? [
+		const scopes: GApiScopes[] = [
 			"https://www.googleapis.com/auth/gmail.readonly",
 			"https://www.googleapis.com/auth/gmail.modify"
-		] : [
-			"https://www.googleapis.com/auth/gmail.readonly"
 		];
-		if (this.gapi && this.gapi.status == AuthenticationStatus.auth &&
+		if (this.gapi && this.gapi.account?.id == this.feed.accountId && this.gapi.status === AuthenticationStatus.auth &&
 			!scopes.except(this.gapi.grantedScopes).any()) {
 
 			return;
 		}
 
-		if (!this.gapi || scopes.except(this.gapi.grantedScopes).any()) {
+		if (!this.gapi || this.gapi.account?.id != this.feed.accountId || scopes.except(this.gapi.grantedScopes).any()) {
 			this.gapi = await GApi.create(scopes);
 		}
 
 		if (this.gapi.status !== AuthenticationStatus.auth) {
-			await this.gapi.interactiveAuth(false);
+			await this.gapi.interactiveAuth(true);
 		}
 	}
 
@@ -106,7 +118,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 				options.pageToken = list.nextPageToken;
 			}
 			try {
-				list = await this.gapi!.gmail.users.threads.list("me", options);
+				list = await this.gapi!.gmail.users.threads.list.call("me", options);
 			} catch (e: any) {
 				if (e.code === 401) {
 					this.gapi!.clearToken();
@@ -121,7 +133,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 		if (threadList.length) {
 			this.feed.historyId = threadList[0].historyId;
 
-			const newThreads = await this.gapi!.gmail.runBatch<Thread>(threadList.select(x => this.gapi!.gmail.users.threads.prepareGet("me", x.id, {
+			const newThreads = await this.gapi!.gmail.runBatch<Thread>(threadList.select(x => this.gapi!.gmail.users.threads.get.prepare("me", x.id, {
 				format: Format.full
 			})).toArray());
 			for (const thread of newThreads) {
@@ -153,7 +165,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 				options.pageToken = list.nextPageToken;
 			}
 			try {
-				list = await this.gapi!.gmail.users.messages.list("me", options);
+				list = await this.gapi!.gmail.users.messages.list.call("me", options);
 			} catch (e: any) {
 				if (e.code === 401) {
 					this.gapi!.clearToken();
@@ -168,7 +180,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 		if (messageList.length) {
 			this.feed.historyId = messageList[0].historyId!;
 
-			const newMessages = await this.gapi!.gmail.runBatch<Message>(messageList.select(x => this.gapi!.gmail.users.messages.prepareGet("me", x.id, {
+			const newMessages = await this.gapi!.gmail.runBatch<Message>(messageList.select(x => this.gapi!.gmail.users.messages.get.prepare("me", x.id, {
 				format: Format.full
 			})).toArray());
 			for (const message of newMessages) {
@@ -214,7 +226,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 	private async partialSync(): Promise<Deltas<FeedItem<FeedItemSchema>>> {
 		const options: UsersHistoryListParams = {
-			labelIds: "INBOX",
+			labelId: "INBOX",
 			startHistoryId: this.feed.historyId!,
 			historyTypes: [HistoryType.labelAdded, HistoryType.labelRemoved,
 				HistoryType.messageAdded],
@@ -226,7 +238,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 				options.pageToken = list.nextPageToken;
 			}
 			try {
-				list = await this.gapi!.gmail.users.history.list("me", options);
+				list = await this.gapi!.gmail.users.history.list.call("me", options);
 			} catch (e: any) {
 				if (e.code === 401) {
 					this.gapi!.clearToken();
@@ -242,7 +254,8 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 				for (const history of list.history) {
 					if (history.labelsAdded) {
 						for (const label of history.labelsAdded) {
-							if (label.labelIds.contains("INBOX") /*|| label.labelIds.contains("UNREAD")*/) {
+							console.log(label.message.labelIds);
+							if (label.labelIds.contains("INBOX") || label.labelIds.contains("UNREAD")) {
 								if (this.feed.showAsThreads) {
 									ids.push(label.message.threadId);
 								} else {
@@ -253,6 +266,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 					}
 					if (history.labelsRemoved) {
 						for (const label of history.labelsRemoved) {
+							console.log(label.message.labelIds);
 							if (label.labelIds.contains("UNREAD")) {
 								if (this.feed.showAsThreads) {
 									ids.push(label.message.threadId);
@@ -264,6 +278,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 					}
 					if (history.messagesAdded) {
 						for (const added of history.messagesAdded) {
+							console.log(added.message.labelIds);
 							if (this.feed.showAsThreads) {
 								ids.push(added.message.threadId);
 							} else {
@@ -282,7 +297,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 		const newItems: GmailFeedItem[] = [];
 		if (ids.length) {
 			if (this.feed.showAsThreads) {
-				const newThreads = await this.gapi!.gmail.runBatch<Thread>(ids.select(x => this.gapi!.gmail.users.threads.prepareGet("me", x, {
+				const newThreads = await this.gapi!.gmail.runBatch<Thread>(ids.select(x => this.gapi!.gmail.users.threads.get.prepare("me", x, {
 					format: Format.full
 				})).toArray());
 				for (const thread of newThreads) {
@@ -291,7 +306,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 					newItems.push(newItem);
 				}
 			} else {
-				const newMessages = await this.gapi!.gmail.runBatch<Message>(ids.select(x => this.gapi!.gmail.users.messages.prepareGet("me", x, {
+				const newMessages = await this.gapi!.gmail.runBatch<Message>(ids.select(x => this.gapi!.gmail.users.messages.get.prepare("me", x, {
 					format: Format.full
 				})).toArray());
 				for (const message of newMessages) {
@@ -339,7 +354,7 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 		let profile: UsersGetProfile;
 		try {
-			profile = await this.gapi.gmail.users.getProfile("me");
+			profile = await this.gapi.gmail.users.getProfile.call("me");
 		} catch (e: any) {
 			if (e.code === 401) {
 				this.gapi.clearToken();
@@ -380,12 +395,12 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 		const isThread = item.messageCount > 0;
 		if (isThread) {
-			await this.gapi!.gmail.users.threads.modify("me", item.guid, {
+			await this.gapi!.gmail.users.threads.modify.call("me", item.guid, {
 				addLabelIds: [],
 				removeLabelIds: ["UNREAD"]
 			})
 		} else {
-			await this.gapi!.gmail.users.messages.modify("me", item.guid, {
+			await this.gapi!.gmail.users.messages.modify.call("me", item.guid, {
 				addLabelIds: [],
 				removeLabelIds: ["UNREAD"]
 			})
@@ -403,16 +418,26 @@ export class GmailFeed extends Feed<GmailFeedSchema> {
 
 		const isThread = item.messageCount > 0;
 		if (isThread) {
-			await this.gapi!.gmail.users.threads.modify("me", item.guid, {
+			await this.gapi!.gmail.users.threads.modify.call("me", item.guid, {
 				addLabelIds: ["UNREAD"],
 				removeLabelIds: []
 			})
 		} else {
-			await this.gapi!.gmail.users.messages.modify("me", item.guid, {
+			await this.gapi!.gmail.users.messages.modify.call("me", item.guid, {
 				addLabelIds: ["UNREAD"],
 				removeLabelIds: []
 			})
 		}
+	}
+
+	public async archive(item: GmailFeedItem) {
+		if (!this.gapi) {
+			await this.initGapi();
+		}
+		this.gapi!.gmail.users.messages.modify.call("me", item.guid, {
+			addLabelIds: [],
+			removeLabelIds: ["INBOX"]
+		});
 	}
 }
 
@@ -436,17 +461,17 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 		super(feedItem);
 
 		if (!feedItem) {
-			this.feedItem.inInbox = true;
 			this.feedItem.messageCount = 0;
 		}
 	}
 
 	public async import(feedItem: Thread | Message): Promise<void> {
+		this.feedItem.guid = feedItem.id;
+
 		if (GmailFeedItem.isThread(feedItem)) {
-			this.feedItem.guid = feedItem.id;
 			this.feedItem.author = feedItem.messages!
 				.select(x => x.payload!.headers.firstOrDefault(x => x.name == "From")?.value)
-				.where(x => !!x).distinct().toArray().join(", ");
+				.where(x => !!x).firstOrDefault();
 			let content: string = "";
 			for (const message of feedItem.messages!) {
 				if (content.length) {
@@ -455,7 +480,6 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 				content += this.formatMessage(message);
 			}
 			this.feedItem.content = content;
-			this.feedItem.inInbox = true;
 			this.feedItem.name = feedItem.messages!
 				.select(x => x.payload!.headers.firstOrDefault(x => x.name == "Subject")?.value)
 				.where(x => !!x).firstOrDefault();
@@ -465,17 +489,31 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 			this.feedItem.read = read ? new Date() : new Date(0);
 			this.feedItem.messageCount = feedItem.messages!.length;
 			this.feedItem.url = `https://mail.google.com/mail/#inbox/${feedItem.id}`;
+			this.feedItem.inInbox = feedItem.messages!.firstOrDefault()?.labelIds?.contains("INBOX") ?? false;
 		} else if (GmailFeedItem.isMessage(feedItem)) {
-			this.feedItem.guid = feedItem.id;
 			this.feedItem.author = feedItem.payload!.headers.firstOrDefault(x => x.name == "From")?.value;
 			this.feedItem.content = this.formatMessage(feedItem);
-			this.feedItem.inInbox = true;
 			this.feedItem.name = feedItem.payload!.headers.firstOrDefault(x => x.name == "Subject")?.value;
 			this.feedItem.published = new Date(parseInt(feedItem.internalDate!, 10));
 			const read = !feedItem.labelIds!.contains("UNREAD");
 			this.feedItem.read = read ? new Date() : new Date(0);
 			this.feedItem.messageCount = 0;
 			this.feedItem.url = `https://mail.google.com/mail/#inbox/${feedItem.threadId}`;
+			this.feedItem.inInbox = feedItem.labelIds?.contains("INBOX") ?? false;
+		}
+
+		let fromName = this.feedItem.author;
+		if (fromName?.length) {
+			const nameRegex = /^(.*?)\s+\<.*?\>/;
+			if (nameRegex.test(fromName)) {
+				fromName = fromName.replace(nameRegex, "$1");
+			}
+		}
+
+		if (this.feedItem.name?.length && fromName?.length) {
+			this.feedItem.name = `${fromName} - ${this.feedItem.name}`;
+		} else if (fromName?.length) {
+			this.feedItem.name = fromName;
 		}
 	}
 
@@ -537,7 +575,7 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 			}
 		}*/
 
-		let payload = atob(part.body.data.replace(/-/g, "+").replace(/_/g, "/"));
+		let payload = atob(part.body.data?.replace(/-/g, "+").replace(/_/g, "/") ?? "");
 
 		// https://stackoverflow.com/questions/5396560/how-do-i-convert-special-utf-8-chars-to-their-iso-8859-1-equivalent-using-javasc
 		payload = decodeURIComponent(escape(payload));
@@ -571,5 +609,27 @@ export class GmailFeedItem extends FeedItem<GmailFeedItemSchema> {
 			const gmail = <GmailFeed>(await this.getParent());
 			await gmail.setItemUnread(this);
 		})();
+	}
+
+	public override toHtml(): string {
+		return this.content;
+	}
+
+	private get canArchive(): boolean {
+		return this.feedItem.inInbox;
+	}
+
+	public override customButtons(feed: GmailFeed): string[] {
+		if (!feed.syncReadToGmail) {
+			return [];
+		}
+
+		return this.canArchive ? ["Archive"] : [];
+	}
+
+	public override async invokeCustomButton(index: number) {
+		await (<GmailFeed>await this.getParent()).archive(this);
+		this.feedItem.inInbox = false;
+		await this.save();
 	}
 }

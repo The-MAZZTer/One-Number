@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
 
 	drawerOpen = true;
 	query = "";
-	private theme: (null | "light" | "dark") = null;
+	private theme: Theme = null;
 
 	constructor(private router: Router, private route: ActivatedRoute) {
 	}
@@ -73,16 +73,16 @@ export class AppComponent implements OnInit {
 
 	private onStorageChanged(changes: OptionChanges): void {
 		if (changes.drawerOpen) {
-			this.drawerOpen = changes.drawerOpen.newValue;
+			this.drawerOpen = <boolean>changes.drawerOpen.newValue;
 		}
 		if (changes.theme) {
-			this.theme = changes.theme.newValue;
+			this.theme = <Theme>changes.theme.newValue;
 			this.setTheme();
 		}
 	}
 
 	private setTheme(): void {
-		let theme: (null | "light" | "dark") = this.theme;
+		let theme: Theme = this.theme;
 		if (!theme) {
 			if (window.matchMedia("(prefers-color-scheme)").media !== "not all") {
 				theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -143,3 +143,5 @@ export class AppComponent implements OnInit {
 		});
 	}
 }
+
+type Theme = null | "light" | "dark";

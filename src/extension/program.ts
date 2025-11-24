@@ -3,63 +3,34 @@ import { FeedItemSchema, FeedSchema } from "./data/dbContext";
 import { All, Deltas, Feed, FeedItem } from "./data/feed";
 import { GmailFeed, GmailFeedItem } from "./data/sources/gmail";
 import { RssAtomFeed, RssAtomFeedItem } from "./data/sources/rssatom";
-import { FeedItemsChangedMessage, Message, ObjectChangedMessage } from "./models/messages";
+import { FeedItemsChangedMessage, Message, ObjectChangedMessage, OldFeedItemsDeletedMessage } from "./models/messages";
 import { Notifications } from "./services/notifications";
 import { Options } from "./services/options";
 
-// TODO
+// TODO 
+
+// Allow adding multiple gmail accounts
+	// Can't use alternate one for built-in chrome.identity auth... find other way
 
 // If fetch fails retry before reporting error
 
-// Don't store HTML in database; store original feed data, convert to HTML at runtime
-
 // Refresh snackbar doesn't always appear?
-
-// Adding fresh gmail gets different messages from periodic sync
-	// Periodic is probably getting All Mail with fresh add getting proper messages.
 
 // Allow customize sanitized html for feed items?
 	// OR just iframe src with data uri?
 	// Create custom content renderer components for each feed type. (don't want to for plugins)
-	// Content in database should be JSON.
-
-// Allow load to side content to be same as load inline (for GMail)
+ 
+// Allow load to side content to be same as load inline (for GMail, load to side doesn't work)
 	// Because iframe doesn't work. Revisit iframe?
+	// Probably should remove load to side.
 
-// Gmail: should show messages on white background with black text
-
-// Gmail: Show from in feed item title
+// Gmail add invert option for dark mode
 
 // Gmail multipart messages?
 
-// Gmail better permissions explanation
-
-// Double notification on new items (only first time?)
-
-// Gmail: Archive button?
-
-// Gmail: Open e-mail?
-// https://mail.google.com/mail/<threadid>
-
 // Gmail filter on labels? eg show only important
 
-// Revisit settings for new gmail for clarity?
-
-// Gmail
-// - Auth (readonly and optionally labels?)
-// - Pull Inbox only
-// - Reflect read/unread status of e-mails
-// - Option to mark read/unread in inbox.
-//   - Ask for permission
-//   - If off, don't pull read/unread status on refresh if no new message in thread
-// - Show messages as threads (y/n)
-//   - Full sync on change, use different guid
-//   - When new message in thread detected, delete and recreate as unread
-// - NOTE: Deleting local copies should update active view, since user may try to open deleted messages.
-// - Do full sync as descrubed in google api (threads or messages as appropriate).
-// - On further updates do update sync as descrubed using historyid (store historyid).
-
-// Feeds sorted wrong when added
+// Feeds sorted wrong when added?
 
 // Badges don't update when feed added (and on read/unread)?
 
@@ -68,13 +39,15 @@ import { Options } from "./services/options";
 // Make sure open aside properly hides images/media if desired.
 
 // More feed types?
-// - Gmail, Youtube, page monitor, Google Fi?,
+// - Youtube, page monitor, Google Fi?, BlueSky?, Mastadon?
 
-// First-time wizard
+// What's New dialog
+	// First-time wizard?
 
 // disable UI on add/edit/delete feed until done
 
-// purge old read feeditems
+// purge old read feeditems?
+	// Test
 
 // color themes?
 // Browser action badge changes colors based on theme
@@ -96,14 +69,11 @@ import { Options } from "./services/options";
 
 // Empty folder loads forever
 
-// First time selecting top level Add selects Add option for folder
-
-// Some gmails have auto text on white background making them illegible. Add option to force black on white colors.
-
-// Add email option to prefer plain text version
+// Add gmail option to prefer plain text version
 
 // Removing gmail doesn't clear read item status
 
+// - Write new generic type to replace StorageChanges
 // - Rich Notifications
 // - Allow use of Offline Gmail
 // - When updating services, update notification if it's already shown regardless of "new" state (only play "new" if there are new).
@@ -141,19 +111,19 @@ import { Options } from "./services/options";
 // - Groups?
 // - Check arbitrary websites for page updates?
 // - Display of actual items, not services
-// 	- Popup has tabs for each service and a "unified" tab.
-// 	- Service tabs can have a persistant card with stuff like "Compose" etc.
-// 	- Items can mimic rich notification appearance, including action buttons.
-// 		- Items can be opened into the browser window when applicable
-// 	- Each tab has a manual refresh option
-// 	- Each tab has a service open option
-// 	- Gmail:
-// 		- Compose button
-// 		- Links to various boxes... user shortcuts?
-// 	- Feedly
-// 		- Links to various boxes... user shortcuts?
-// 	- Page updates
-// 	- See if I can hook into steam in some way that's cool
+// - Popup has tabs for each service and a "unified" tab.
+// - Service tabs can have a persistant card with stuff like "Compose" etc.
+// - Items can mimic rich notification appearance, including action buttons.
+//  - Items can be opened into the browser window when applicable
+// - Each tab has a manual refresh option
+// - Each tab has a service open option
+// - Gmail:
+// 	- Compose button
+// 	- Links to various boxes... user shortcuts?
+// - Feedly
+// 	- Links to various boxes... user shortcuts?
+// - Page updates
+// - See if I can hook into steam in some way that's cool
 
 class Program {
 	private constructor() {}
@@ -227,8 +197,24 @@ class Program {
 			feed: Feed<FeedSchema>,
 			feedItems: FeedItem<FeedItemSchema>[]
 		}[] = [];
-		let defaultNotification = await Options.get("notification");
-		for (const feed of await new All().getPendingRefreshFeeds()) {
+		const { notification, purgeAfter } = await Options.getMany("notification", "purgeAfter");
+
+		const all = new All();
+		if (purgeAfter > 0) {
+			const cutoff = new Date(new Date().valueOf() - purgeAfter * 24 * 60 * 60 * 1000);
+			const items = await all.deleteOldFeedItems(cutoff);
+			if (items.length) {
+				const message: OldFeedItemsDeletedMessage = {
+					type: "oldFeedItemsDeleted",
+					added: [],
+					updated: [],
+					deleted: items.select(x => x.id).toArray()
+				};
+				chrome.runtime.sendMessage(message);
+			}
+		}
+
+		for (const feed of await all.getPendingRefreshFeeds()) {
 			let deltas: Deltas<FeedItem<FeedItemSchema>>;
 			let prevError = !!feed.lastError.length;
 			try {
@@ -274,18 +260,18 @@ class Program {
 			}
 
 			if (deltas.added.length) {
-				let notification;
+				let feedNotification;
 				if (feed.notification) {
-					notification = feed.notification > 0;
+					feedNotification = feed.notification > 0;
 				} else {
-					notification = defaultNotification;
+					feedNotification = notification;
 				}
-				if (notification) {
+				if (feedNotification) {
 					notify.push({
 						feed,
 						feedItems: deltas.added
 					});
-				}	
+				}
 			}
 		}
 

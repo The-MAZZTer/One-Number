@@ -1,6 +1,7 @@
 import { GApiCall } from "./base";
 import { GMail } from "./gmail";
 import { GApiScopes } from "./scopes";
+import { YouTube } from "./youtube";
 
 export class GApi {
 	private static getAuthToken(details: TokenDetails):
@@ -13,12 +14,16 @@ export class GApi {
 		});
 	}
 
-	public static async create(requiredScopes?: GApiScopes[], optionalScopes?: GApiScopes[]): Promise<GApi> {
-		const gapi = new GApi(requiredScopes, optionalScopes);
+	public static async create(requiredScopes?: GApiScopes[], optionalScopes?: GApiScopes[], account?: chrome.identity.AccountInfo): Promise<GApi> {
+		const gapi = new GApi(requiredScopes, optionalScopes, account);
 
 		const options: TokenDetails = {
 			interactive: false
 		};
+		if (account) {
+			options.account = account;
+		}
+
 		if (requiredScopes || optionalScopes) {
 			options.scopes = (requiredScopes ?? []).concatenate(optionalScopes ?? []).toArray();
 		}
@@ -35,7 +40,8 @@ export class GApi {
 	}
 
 	private constructor(public requiredScopes?: GApiScopes[],
-		public optionalScopes?: GApiScopes[]) {}
+		public optionalScopes?: GApiScopes[],
+		public account?: chrome.identity.AccountInfo) {}
 
 	private token?: string;
 	public grantedScopes: GApiScopes[] = [];
@@ -68,6 +74,9 @@ export class GApi {
 			interactive: true,
 			enableGranularPermissions
 		};
+		if (this.account) {
+			options.account = this.account;
+		}
 		if (this.requiredScopes || this.optionalScopes) {
 			options.scopes = (this.requiredScopes ?? []).concatenate(this.optionalScopes ?? []).toArray();
 		}
@@ -201,7 +210,7 @@ export class GApi {
 		}
 
 		let contentType = res.headers.get("Content-Type");
-		boundary = contentType!.substr(contentType!.indexOf("boundary=") + "boundary=".length);
+		boundary = contentType!.substring(contentType!.indexOf("boundary=") + "boundary=".length);
 
 		const ret: T[] = new Array(options.length);
 		const responses = (await res.text()).split(`--${boundary}`);
@@ -236,7 +245,7 @@ export class GApi {
 				console.warn(`Unexpected content id "${contentId}"!`);
 				continue;
 			}
-			const index = parseInt(contentId.substr("<response-item".length, contentId.indexOf("@") - "<response-item".length), 10);
+			const index = parseInt(contentId.substring("<response-item".length, contentId.indexOf("@")), 10);
 			if (isNaN(index)) {
 				console.warn(`Unexpected content id "${contentId}"!`);
 				continue;
@@ -280,11 +289,22 @@ export class GApi {
 	public get gmail(): GMail {
 		if (!this._gmail) {
 			this._gmail = new GMail("https://gmail.googleapis.com/", "gmail", "v1",
-				options => this.fetch(options),
-				(url, options) => this.batchFetch(url, options)
+				this.fetch.bind(this),
+				this.batchFetch.bind(this)
 			);
 		}
 		return this._gmail;
+	}
+
+	private _youtube?: YouTube;
+	public get youtube(): YouTube {
+		if (!this._youtube) {
+			this._youtube = new YouTube("https://www.googleapis.com/", "youtube", "v3",
+				this.fetch.bind(this),
+				this.batchFetch.bind(this)
+			);
+		}
+		return this._youtube;
 	}
 }
 

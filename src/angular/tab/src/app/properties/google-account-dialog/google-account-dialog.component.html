@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Select Google Account</h1>
+<div mat-dialog-content>
+	<mat-radio-group [(ngModel)]="which">
+		<mat-radio-button [value]="0">Use current signed-in account.</mat-radio-button>
+		<mat-radio-button [value]="1">Use other account.</mat-radio-button>
+	</mat-radio-group>
+
+	<mat-form-field>
+		<input matInput type="email" [required]="which == 1" [(ngModel)]="email" [disabled]="which != 1" />
+		<mat-hint>Email address of account.</mat-hint>
+	</mat-form-field>
+</div>
+<div mat-dialog-actions>
+	<button mat-raised-button color="primary" [mat-dialog-close]="undefined">Cancel</button>
+	<button mat-raised-button color="accent" [disabled]="which == 1 && !email.length" [mat-dialog-close]="which == 1 ? email : ''" cdkFocusInitial>Choose</button>
+</div>

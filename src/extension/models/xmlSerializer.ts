@@ -1,8 +1,11 @@
 import "reflect-metadata";
-/// #if !ANGULAR
-import { DOMParser } from "xmldom";
-/// #endif
 import { Enumerable, ArrayEnumerable } from "linq";
+
+if (!DOMParser) {
+	import("xmldom").then(x => {
+		DOMParser = x.DOMParser;
+	})
+}
 
 ArrayEnumerable.extend(Array);
 

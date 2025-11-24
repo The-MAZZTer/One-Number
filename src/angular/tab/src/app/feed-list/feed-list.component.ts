@@ -992,7 +992,7 @@ class FeedListItem {
 	public get editName(): string {
 		switch (this.type) {
 			case FeedListItemTypes.all:
-				return "Options";
+				return "General";
 		}
 		return this.name;
 	}

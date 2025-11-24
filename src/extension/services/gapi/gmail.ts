@@ -1,4 +1,4 @@
-import { GApiCall, GApiBase } from "./base";
+import { GApiCall, GApiBase, GApiEndpoint } from "./base";
 
 export class GMail extends GApiBase	{
 	private _users?: GMailUsers;
@@ -43,37 +43,46 @@ class GMailUsers extends GApiBase {
 		return this._threads;
 	}
 
-	public prepareGetProfile(userId: string): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/profile`
-		};
+	private _getProfile?: GApiEndpoint<UsersGetProfile, string>;
+	public get getProfile() {
+		if (!this._getProfile) {
+			this._getProfile = new GApiEndpoint<UsersGetProfile, string>(
+				(userId: string) => {
+					return {
+						api: `users/${encodeURI(userId)}/profile`
+					};
+				}, this.callApi);
+		}
+		return this._getProfile;
 	}
 
-	public getProfile(userId: string): Promise<UsersGetProfile> {
-		return this.callApi(this.prepareGetProfile(userId));
+	private _stop?: GApiEndpoint<void, string>;
+	public get stop() {
+		if (!this._stop) {
+			this._stop = new GApiEndpoint<void, string>(
+				(userId: string) => {
+					return {
+						api: `users/${encodeURI(userId)}/stop`,
+						verb: "POST"
+					};
+				}, this.callApi);
+		}
+		return this._getProfile;
 	}
 
-	public prepareStop(userId: string): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/stop`,
-			verb: "POST"
-		};
-	}
-
-	public stop(userId: string): Promise<void> {
-		return this.callApi(this.prepareStop(userId));
-	}
-
-	public prepareWatch(userId: string, body: UsersWatchBody): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/watch`,
-			verb: "POST",
-			body: body
-		};
-	}
-
-	public watch(userId: string, body: UsersWatchBody): Promise<UsersWatch> {
-		return this.callApi(this.prepareWatch(userId, body));
+	private _watch?: GApiEndpoint<UsersWatch, string, UsersWatchBody>;
+	public get watch() {
+		if (!this._watch) {
+			this._watch = new GApiEndpoint<UsersWatch, string, UsersWatchBody>(
+				(userId: string, body: UsersWatchBody) => {
+					return {
+						api: `users/${encodeURI(userId)}/watch`,
+						verb: "POST",
+						body: body
+					};
+				}, this.callApi);
+			}
+		return this._getProfile;
 	}
 }
 
@@ -81,97 +90,118 @@ class GMailUsersDrafts extends GApiBase {
 }
 
 class GMailUsersHistory extends GApiBase {
-	public prepareList(userId: string, params: UsersHistoryListParams): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/history`,
-			query: params as  unknown as {
-				[key: string]: string
-			}
-		};
-	}
-
-	public list(userId: string, params: UsersHistoryListParams): Promise<UsersHistoryList> {
-		return this.callApi(this.prepareList(userId, params));
+	private _list?: GApiEndpoint<UsersHistoryList, string, UsersHistoryListParams>;
+	public get list() {
+		if (!this._list) {
+			this._list = new GApiEndpoint<UsersHistoryList, string, UsersHistoryListParams>(
+				(userId: string, params: UsersHistoryListParams) => {
+					return {
+						api: `users/${encodeURI(userId)}/history`,
+						query: params as unknown as {
+							[key: string]: string
+						}
+					};
+				}, this.callApi);
+		}
+		return this._list;
 	}
 }
 
 class GMailUsersMessages extends GApiBase {
-	public prepareGet(userId: string, id: string, params: UsersMessagesGetParams): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/messages/${encodeURI(id)}`,
-			query: params as {
-				[key: string]: string
-			}
-		};
+	private _get?: GApiEndpoint<Message, string, string, UsersMessagesGetParams>;
+	public get get() {
+		if (!this._get) {
+			this._get = new GApiEndpoint<Message, string, string, UsersMessagesGetParams>(
+				(userId: string, id: string, params: UsersMessagesGetParams) => {
+					return {
+						api: `users/${encodeURI(userId)}/messages/${encodeURI(id)}`,
+						query: params as {
+							[key: string]: string
+						}
+					};
+				}, this.callApi);
+		}
+		return this._get;
 	}
 
-	public get(userId: string, id: string, params: UsersMessagesGetParams): Promise<Message> {
-		return this.callApi(this.prepareGet(userId, id, params));
+	private _list?: GApiEndpoint<UsersMessagesList, string, UsersMessagesListParams>;
+	public get list() {
+		if (!this._list) {
+			this._list = new GApiEndpoint<UsersMessagesList, string, UsersMessagesListParams>(
+				(userId: string, params: UsersMessagesListParams) => {
+					return {
+						api: `users/${encodeURI(userId)}/messages`,
+						query: params as {
+							[key: string]: string
+						}
+					};
+				}, this.callApi);
+		}
+		return this._list;
 	}
 
-	public prepareList(userId: string, params: UsersMessagesListParams): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/messages`,
-			query: params as {
-				[key: string]: string
-			}
-		};
-	}
-
-	public list(userId: string, params: UsersMessagesListParams): Promise<UsersMessagesList> {
-		return this.callApi(this.prepareList(userId, params));
-	}
-
-	public prepareModify(userId: string, id: string, params: UsersMessagesModifyParams): GApiCall {
-		return {
-			verb: "POST",
-			api: `users/${encodeURI(userId)}/messages/${encodeURI(id)}/modify`,
-			body: params
-		};
-	}
-
-	public modify(userId: string, id: string, params: UsersMessagesModifyParams): Promise<Message> {
-		return this.callApi(this.prepareModify(userId, id, params));
+	private _modify?: GApiEndpoint<Message, string, string, UsersMessagesModifyParams>;
+	public get modify() {
+		if (!this._modify) {
+			this._modify = new GApiEndpoint<Message, string, string, UsersMessagesModifyParams>(
+				(userId: string, id: string, params: UsersMessagesModifyParams) => {
+					return {
+						verb: "POST",
+						api: `users/${encodeURI(userId)}/messages/${encodeURI(id)}/modify`,
+						body: params
+					};
+				}, this.callApi);
+		}
+		return this._modify;
 	}
 }
 
 class GMailUsersThreads extends GApiBase {
-	public prepareGet(userId: string, id: string, params: UsersMessagesGetParams): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/threads/${encodeURI(id)}`,
-			query: params as {
-				[key: string]: string
+	private _get?: GApiEndpoint<Thread, string, string, UsersMessagesGetParams>;
+	public get get() {
+		if (!this._get) {
+			this._get = new GApiEndpoint<Thread, string, string, UsersMessagesGetParams>(
+				(userId: string, id: string, params: UsersMessagesGetParams) => {
+					return {
+						api: `users/${encodeURI(userId)}/threads/${encodeURI(id)}`,
+						query: params as {
+							[key: string]: string
+						}
+					};
+				}, this.callApi);
+		}
+		return this._get;
+	}
+
+	private _list?: GApiEndpoint<UsersThreadsList, string, UsersMessagesListParams>;
+	public get list() {
+		if (!this._list) {
+			this._list = new GApiEndpoint<UsersThreadsList, string, UsersMessagesListParams>(
+				(userId: string, params: UsersMessagesListParams) => {
+					return {
+						api: `users/${encodeURI(userId)}/threads`,
+						query: params as {
+							[key: string]: string
+						}
+					};
+				}, this.callApi);
+		}
+		return this._list;
+	}
+
+	private _modify?: GApiEndpoint<Thread, string, string, UsersMessagesModifyParams>;
+	public get modify() {
+		if (!this._modify) {
+			this._modify = new GApiEndpoint<Thread, string, string, UsersMessagesModifyParams>(
+				(userId: string, id: string, params: UsersMessagesModifyParams) => {
+					return {
+						verb: "POST",
+						api: `users/${encodeURI(userId)}/threads/${encodeURI(id)}/modify`,
+						body: params
+					};
+				}, this.callApi);
 			}
-		};
-	}
-
-	public get(userId: string, id: string, params: UsersMessagesGetParams): Promise<Thread> {
-		return this.callApi(this.prepareGet(userId, id, params));
-	}
-
-	public prepareList(userId: string, params: UsersMessagesListParams): GApiCall {
-		return {
-			api: `users/${encodeURI(userId)}/threads`,
-			query: params as {
-				[key: string]: string
-			}
-		};
-	}
-
-	public list(userId: string, params: UsersMessagesListParams): Promise<UsersThreadsList> {
-		return this.callApi(this.prepareList(userId, params));
-	}
-
-	public prepareModify(userId: string, id: string, params: UsersMessagesModifyParams): GApiCall {
-		return {
-			verb: "POST",
-			api: `users/${encodeURI(userId)}/threads/${encodeURI(id)}/modify`,
-			body: params
-		};
-	}
-
-	public modify(userId: string, id: string, params: UsersMessagesModifyParams): Promise<Thread> {
-		return this.callApi(this.prepareModify(userId, id, params));
+		return this._modify;
 	}
 }
 
@@ -197,7 +227,7 @@ export type UsersHistoryListParams = {
 	maxResults?: number,
 	pageToken?: string,
 	startHistoryId: string,
-	labelIds?: string
+	labelId?: string
 	historyTypes?: HistoryType[]
 }
 

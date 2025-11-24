@@ -1,12 +1,12 @@
-<h1>Options</h1>
-<h3>Adjust the following settings, and click Save:</h3>
+<h1>General Options</h1>
+<h3>Adjust settings as desired and click Save.</h3>
 
 @if (options) {
   <form #form>
     <mat-accordion multi="true">
       <mat-expansion-panel expanded togglePosition="before">
         <mat-expansion-panel-header>
-          <mat-panel-title>Appearance options</mat-panel-title>
+          <mat-panel-title>Appearance</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-radio-group [(ngModel)]="options.theme" [ngModelOptions]="{standalone: true}">
           <label>Theme:</label>
@@ -17,7 +17,7 @@
       </mat-expansion-panel>
       <mat-expansion-panel expanded togglePosition="before">
         <mat-expansion-panel-header>
-          <mat-panel-title>Notification options</mat-panel-title>
+          <mat-panel-title>Notifications</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-checkbox [(ngModel)]="options.notification" [ngModelOptions]="{standalone: true}">Show notification on new items</mat-checkbox>
         <mat-checkbox [(ngModel)]="options.notifyOnFeedError" [ngModelOptions]="{standalone: true}">Show notification on feed update error</mat-checkbox>
@@ -29,22 +29,22 @@
       </mat-expansion-panel>
       <mat-expansion-panel expanded togglePosition="before">
         <mat-expansion-panel-header>
-          <mat-panel-title>Feed item display options</mat-panel-title>
+          <mat-panel-title>Feed item display</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-checkbox [(ngModel)]="options.showImages" [ngModelOptions]="{standalone: true}">Show images inline</mat-checkbox>
         <mat-checkbox [(ngModel)]="options.showAudioVideo" [ngModelOptions]="{standalone: true}">Show audio and video inline</mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel expanded togglePosition="before">
         <mat-expansion-panel-header>
-          <mat-panel-title>Default feed update options</mat-panel-title>
+          <mat-panel-title>Feed updates</mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field>
-          <mat-label>Refresh interval</mat-label>
+          <mat-label>Default refresh interval</mat-label>
           <input matInput type="number" required [(ngModel)]="options.queryInterval" [ngModelOptions]="{standalone: true}" />
           <span matSuffix>minutes</span>
         </mat-form-field>
         <mat-form-field>
-          <mat-label>Purge old read unstarred items after</mat-label>
+          <mat-label>Purge read unstarred items after</mat-label>
           <input matInput type="number" required [(ngModel)]="options.purgeAfter" [ngModelOptions]="{standalone: true}" />
           <span matSuffix>days</span>
         </mat-form-field>

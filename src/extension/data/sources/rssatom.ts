@@ -1,12 +1,15 @@
 import { Deltas, Feed, FeedItem } from "../feed";
-/// #if !ANGULAR
-import { DOMParser } from "xmldom";
-/// #endif
 import { RssFeed, RssItem } from "../../models/rss";
 import { AtomEntry, AtomFeed, AtomText } from "../../models/atom";
 import { XmlSerializer } from "../../models/xmlSerializer";
 import { FeedItemSchema, FeedSchema } from "../dbContext";
 import { Rdf, RdfItem } from "../../models/rdf";
+
+if (!DOMParser) {
+	import("xmldom").then(x => {
+		DOMParser = x.DOMParser;
+	})
+}
 
 interface RssAtomFeedSchema extends FeedSchema {
 	url: string | null
@@ -75,7 +78,7 @@ export class RssAtomFeed extends Feed<RssAtomFeedSchema> {
 			case "xhtml":
 				return (atom.element as Element).textContent ?? "";
 			case "html":
-				let dom = new DOMParser().parseFromString(`<xml>${atom.text}</xml>`);
+				let dom = new DOMParser().parseFromString(`<xml>${atom.text}</xml>`, "text/html");
 				return dom.documentElement.textContent ?? "";
 			default:
 				return atom.text ?? "";
@@ -193,7 +196,7 @@ export class RssAtomFeedItem extends FeedItem<RssAtomFeedItemSchema> {
 			case "xhtml":
 				return (atom.element as Element).textContent ?? "";
 			case "html":
-				let dom = new DOMParser().parseFromString(`<xml>${atom.text}</xml>`);
+				let dom = new DOMParser().parseFromString(`<xml>${atom.text}</xml>`, "text/html");
 				return dom.documentElement.textContent ?? "";
 			default:
 				return atom.text ?? "";
@@ -326,5 +329,9 @@ export class RssAtomFeedItem extends FeedItem<RssAtomFeedItemSchema> {
 
 	public get media(): { url: string, type: string } {
 		return this.feedItem.media;
+	}
+
+	public override toHtml(): string {
+		return this.feedItem.content ?? "";
 	}
 }

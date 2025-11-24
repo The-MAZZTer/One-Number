@@ -1,7 +1,7 @@
 import { EventEmitter, Injectable, Output } from "@angular/core";
 import { FeedItemSchema, FeedSchema } from "../../../../../../extension/data/dbContext";
 import { Deltas, Feed, FeedItem, Folder } from "../../../../../../extension/data/feed";
-import { ObjectChangedMessage, Message, FeedItemsChangedMessage, FeedItemsPropertyChangedMessage as FeedItemsPropertyChangedMessage } from "../../../../../../extension/models/messages";
+import { ObjectChangedMessage, Message, FeedItemsChangedMessage, FeedItemsPropertyChangedMessage as FeedItemsPropertyChangedMessage, OldFeedItemsDeletedMessage } from "../../../../../../extension/models/messages";
 
 @Injectable({
 	providedIn: "root"
@@ -31,6 +31,8 @@ export class MessageService {
 	feedItemsReadChanged = new EventEmitter<FeedItem<FeedItemSchema>[]>();
 	@Output()
 	feedItemStarChanged = new EventEmitter<FeedItem<FeedItemSchema>>();
+	@Output()
+	oldFeedItemsDeleted = new EventEmitter<OldFeedItemsDeleted>();
 
 	constructor() {
 		chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse) => {
@@ -42,6 +44,7 @@ export class MessageService {
 				let feedItemsPropertyChangedMessage: FeedItemsPropertyChangedMessage;
 				let feedItems: FeedItem<FeedItemSchema>[];
 				let feedItem: FeedItem<FeedItemSchema>;
+				let oldFeedItemsDeleted: OldFeedItemsDeletedMessage;
 
 				switch (message.type) {
 					case "folderAdded":
@@ -124,6 +127,12 @@ export class MessageService {
 						changedMessage = message as ObjectChangedMessage;
 						feedItem = (await FeedItem.fromId(changedMessage.id))!;
 						this.feedItemStarChanged.emit(feedItem);
+						break;
+					case "oldFeedItemsDeleted":
+						oldFeedItemsDeleted = message as OldFeedItemsDeletedMessage;
+						this.oldFeedItemsDeleted.emit({
+							deleted: oldFeedItemsDeleted.deleted
+						});
 						break;
 				}
 				sendResponse();
@@ -276,5 +285,9 @@ export type FeedItemsChanged = {
 	feed: Feed<FeedSchema>,
 	added: FeedItem<FeedItemSchema>[],
 	updated: FeedItem<FeedItemSchema>[],
+	deleted: number[]
+};
+
+export type OldFeedItemsDeleted = {
 	deleted: number[]
 };

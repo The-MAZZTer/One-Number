@@ -264,7 +264,7 @@ export class DbContext {
 			}
 		}
 
-		for (let _ in where) {
+		for (const _ in where) {
 			return { where: where, terms: plainStrings };
 		}
 		return { where: null, terms: plainStrings };
@@ -460,6 +460,7 @@ export type FeedSchema = {
 	queryInterval: number,
 	notification: number,
 	description: string | null,
+	forceLightModeContent: boolean,
 
 	nextRefresh: Date | null,
 	lastUpdated: Date | null,

@@ -9,6 +9,7 @@ import { RssAtomFeed } from "../../../../../../extension/data/sources/rssatom";
 })
 export class RssAtomFeedPropertiesComponent {
 	@Input() feed?: RssAtomFeed;
+	@Input() isNew: boolean = false;
 
 	public needsRefetch = true;
 

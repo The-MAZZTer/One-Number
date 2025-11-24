@@ -13,11 +13,6 @@ module.exports = {
         test: /\.tsx?$/,
         use: [{
           loader: "ts-loader"
-        }, {
-          loader: "ifdef-loader",
-          options: {
-            ANGULAR: false
-          }
         }],
         exclude: /node_modules/,
       },

@@ -54,6 +54,35 @@ export class Notifications {
 		}
 	}
 
+	private static friendlyDate(date: Date): string {
+		const seconds = (new Date().valueOf() - date.valueOf()) / 1000;
+		const minutes = seconds / 60;
+		if (minutes < 1) {
+			return `${Math.round(seconds)} second${Math.round(seconds) == 1 ? "" : "s"} ago`;
+		}
+		const hours = minutes / 60;
+		if (hours < 1) {
+			return `${Math.round(minutes)} minute${Math.round(minutes) == 1 ? "" : "s"} ago`;
+		}
+		const days = hours / 24;
+		if (days < 1) {
+			return `${Math.round(hours)} hour${Math.round(hours) == 1 ? "" : "s"} ago`;
+		}
+		const weeks = days / 7;
+		if (weeks < 1) {
+			return `${Math.round(days)} day${Math.round(days) == 1 ? "" : "s"} ago`;
+		}
+		const years = days / 365.25;
+		const months = years * 12;
+		if (months < 1) {
+			return `${Math.round(weeks)} week${Math.round(weeks) == 1 ? "" : "s"} ago`;
+		}
+		if (years < 1) {
+			return `${Math.round(months)} month${Math.round(months) == 1 ? "" : "s"} ago`;
+		}
+		return `${Math.round(years)} year${Math.round(years) == 1 ? "" : "s"} ago`;
+	}
+
 	private static async showSingleFeed(feed: Feed<FeedSchema>, feedItems: FeedItem<FeedItemSchema>[]):
 		Promise<void> {
 
@@ -76,7 +105,7 @@ export class Notifications {
 
 			let nextId = await Options.get("notificationIds");
 			if (feedItems.length > 1) {
-				const summary =  `${feedItems.length} new at ${new Date().toLocaleString()}`;
+				const summary =  `${feedItems.length} new`;
 				chrome.notifications.create(`feed_${feed.id}_${++nextId}`, {
 					type: "list",
 					iconUrl: icon,
@@ -84,7 +113,7 @@ export class Notifications {
 					message: summary,
 					items: feedItems.select<chrome.notifications.NotificationItem>(x => { return {
 						title: x.name,
-						message: x.published.toLocaleString()
+						message: this.friendlyDate(x.published)
 					}}).toArray(),
 					contextMessage: summary,
 					buttons: [{
@@ -100,8 +129,8 @@ export class Notifications {
 					title: `${feedItem.name} - ${feed.name} - One Number`,
 					message: feedItem.content ? feedItem.content.replace(htmlTagRegex, " ").replace(/\s+/, " ") : "",
 					contextMessage: feedItem.author ?
-						`Published at ${feedItem.published.toLocaleString()} at ${feedItem.author}` :
-						`Published at ${feedItem.published.toLocaleString()}`,
+						`Published ${this.friendlyDate(feedItem.published)} by ${feedItem.author}` :
+						`Published ${this.friendlyDate(feedItem.published)}`,
 					buttons: [{
 						title: "Open \"All\" View"
 					}]
@@ -126,7 +155,7 @@ export class Notifications {
 
 		let nextId = await Options.get("notificationIds");
 
-		const summary =  `${notify.sum(x => x.feedItems.length)} new at ${new Date().toLocaleString()}`;
+		const summary =  `${notify.sum(x => x.feedItems.length)} new`;
 		chrome.notifications.create(`all_${++nextId}`, {
 			type: "list",
 			iconUrl: "/icon/256.png",
@@ -134,7 +163,7 @@ export class Notifications {
 			message: summary,
 			items: notify.selectMany(x => x.feedItems.select(y => { return {feed: x.feed, feedItem: y} })).select(x => { return {
 				title: `${x.feedItem.name} - ${x.feed.name}`,
-				message: x.feedItem.published.toLocaleString()
+				message: this.friendlyDate(x.feedItem.published)
 			}}).toArray(),
 			contextMessage: summary
 		});
